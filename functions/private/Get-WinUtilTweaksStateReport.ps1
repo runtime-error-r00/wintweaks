@@ -6,10 +6,12 @@ function Get-WinUtilTweaksStateReport {
     #>
 
     $categoryFieldNames = [ordered]@{
-        "Essential Tweaks"                    = "essentialTweaks"
-        "Customize Preferences"               = "customizePreferences"
-        "z__Advanced Tweaks - CAUTION"         = "advancedTweaks"
-        "Performance Plans - NOT FOR LAPTOPS" = "performancePlans"
+        "a__Privacy"            = "privacy"
+        "b__System"             = "system"
+        "c__Performance"        = "performance"
+        "d__Interface"          = "interface"
+        "z__Advanced - Caution" = "advancedTweaks"
+        "Customize Preferences" = "customizePreferences"
     }
 
     $grouped = [ordered]@{}
@@ -30,8 +32,8 @@ function Get-WinUtilTweaksStateReport {
             $entry = $property.Value
             $fieldName = $categoryFieldNames[[string]$entry.category]
 
-            # Buttons embedded in the tweaks panel (e.g. the OOSU/Ultimate Performance launchers)
-            # are actions, not stateful tweaks, so they're outside this report's scope entirely.
+            # Buttons embedded in the tweaks panel are actions, not stateful tweaks, so they're
+            # outside this report's scope entirely.
             if (-not $fieldName -or $entry.Type -eq "Button") {
                 continue
             }

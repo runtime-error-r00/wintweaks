@@ -228,35 +228,43 @@ Describe "Tweaks config" {
         $locationServices[0].StartupType | Should -Be "Disabled"
     }
 
-    $icaclsPrincipalCases = @(
-        @{
-            Path          = (Join-Path $configRoot "tweaks.json")
-            Tweak         = "WPFTweaksDisableStoreSearch"
-            Sid           = '*S-1-1-0'
-            ExpectedCount = 2
-        }
-        @{
-            Path          = (Join-Path $configRoot "tweaks.json")
-            Tweak         = "WPFTweaksRazerBlock"
-            Sid           = '*S-1-1-0'
-            ExpectedCount = 2
-        }
-        @{
-            Path          = (Join-Path $configRoot "tweaks.json")
-            Tweak         = "WPFTweaksRemoveOneDrive"
-            Sid           = '*S-1-5-32-544'
-            ExpectedCount = 2
-        }
-    )
-
-    It "identifies the <Tweak> icacls principal by SID" -TestCases $icaclsPrincipalCases {
-        param([string]$Path, [string]$Tweak, [string]$Sid, [int]$ExpectedCount)
+    It "rates every checkbox tweak low, medium or high risk" -TestCases $testCase {
+        param([string]$Path)
 
         $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
-        $scripts = (@($tweaks.$Tweak.InvokeScript) + @($tweaks.$Tweak.UndoScript)) -join "`n"
-        $sidCount = ([regex]::Matches($scripts, [regex]::Escape($Sid))).Count
+        $unrated = @(
+            $tweaks.PSObject.Properties |
+                Where-Object { -not $_.Value.Type -and $_.Value.risk -notin @("low", "medium", "high") } |
+                ForEach-Object { "$($_.Name) has risk '$($_.Value.risk)'" }
+        )
 
-        $sidCount | Should -Be $ExpectedCount -Because "$Tweak must pass $Sid to icacls at every call site instead of a localized account name"
+        $unrated | Should -BeNullOrEmpty -Because "the risk dot and the info tooltip read this field"
+    }
+
+    It "offers the restore point at run time instead of as a tweak" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+
+        $tweaks.PSObject.Properties.Name | Should -Not -Contain "WPFTweaksRestorePoint"
+    }
+
+    It "identifies every icacls principal by SID" -TestCases $testCase {
+        param([string]$Path)
+
+        $tweaks = Get-Content -Path $Path -Raw | ConvertFrom-Json
+        $invalidCalls = New-Object System.Collections.Generic.List[string]
+
+        foreach ($tweak in $tweaks.PSObject.Properties) {
+            $scripts = (@($tweak.Value.InvokeScript) + @($tweak.Value.UndoScript)) -join "`n"
+            foreach ($match in [regex]::Matches($scripts, '/(?:grant|deny|remove)(?::[rgd])?\s+([^\s:]+)')) {
+                if (-not $match.Groups[1].Value.StartsWith('*S-')) {
+                    $invalidCalls.Add("$($tweak.Name) passes '$($match.Groups[1].Value)' to icacls")
+                }
+            }
+        }
+
+        $invalidCalls | Should -BeNullOrEmpty -Because "a localized account name breaks icacls on non-English Windows"
     }
 }
 
@@ -385,45 +393,6 @@ Describe "UI-rendered config entries" {
 
         if ($invalidEntries.Count -gt 0) {
             throw ($invalidEntries -join "`n")
-        }
-    }
-
-    It "contains required DNS fields with parseable IP addresses" {
-        $dns = Get-WinUtilConfigObject -Name "dns"
-        $requiredFields = @("Primary", "Secondary", "Primary6", "Secondary6")
-        $invalidEntries = New-Object System.Collections.Generic.List[string]
-
-        foreach ($entry in $dns.PSObject.Properties) {
-            foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName $entry.Name -Entry $entry.Value -RequiredFields $requiredFields)) {
-                $invalidEntries.Add($missingField)
-            }
-
-            foreach ($field in $requiredFields) {
-                if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name $field)) {
-                    continue
-                }
-
-                try {
-                    [System.Net.IPAddress]::Parse([string]$entry.Value.$field) | Out-Null
-                } catch {
-                    $invalidEntries.Add("$($entry.Name) $field is not a parseable IP address")
-                }
-            }
-        }
-
-        if ($invalidEntries.Count -gt 0) {
-            throw ($invalidEntries -join "`n")
-        }
-    }
-
-    It "exposes every configured DNS provider in the DNS combobox" {
-        $dns = Get-WinUtilConfigObject -Name "dns"
-        $tweaks = Get-WinUtilConfigObject -Name "tweaks"
-        $comboItems = @($tweaks.WPFchangedns.ComboItems -split " ")
-        $missingProviders = @($dns.PSObject.Properties.Name | Where-Object { $comboItems -notcontains $_ })
-
-        if ($missingProviders.Count -gt 0) {
-            throw "WPFchangedns missing providers: $($missingProviders -join ', ')"
         }
     }
 

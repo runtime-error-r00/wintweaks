@@ -128,7 +128,8 @@ function Invoke-WinutilThemeChange {
 
     switch ($sync.preferences.theme) {
         "Auto" {
-            $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
+            $personalize = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -ErrorAction SilentlyContinue
+            $systemUsesDarkMode = $personalize.AppsUseLightTheme -eq 0 -and $personalize.SystemUsesLightTheme -eq 0
             if ($systemUsesDarkMode) {
                 $theme = "Dark"
             }

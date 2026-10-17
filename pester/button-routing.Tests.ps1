@@ -3,8 +3,9 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUpdatesdisable.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Request-WinUtilRestorePoint.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilRestorePointStep.ps1")
 
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters)
@@ -19,6 +20,7 @@ BeforeAll {
         param($ErrorRecord, $Component, $Context)
     }
     function Invoke-WPFFeatureInstall { }
+    function Invoke-WPFUpdatessecurity { }
 }
 
 Describe "Work button preflight" {
@@ -33,7 +35,7 @@ Describe "Work button preflight" {
                     }
                 }
             }
-            WPFUpdatesdisable = [pscustomobject]@{ Content = "Disable Updates" }
+            WPFUpdatessecurity = [pscustomobject]@{ Content = "Apply Recommended" }
         })
         $script:capturedJob = $null
 
@@ -41,8 +43,9 @@ Describe "Work button preflight" {
         Mock Write-WinUtilLog { }
         Mock Write-WinUtilErrorRecord { }
         Mock Invoke-WPFFeatureInstall { }
-        Mock Invoke-WPFUpdatesdisable { }
-        Mock Confirm-WPFUpdatesdisable { $true }
+        Mock Invoke-WPFUpdatessecurity { }
+        Mock Request-WinUtilRestorePoint { $true }
+        Mock Invoke-WinUtilRestorePointStep { $true }
         Mock Start-WinUtilJob {
             $script:capturedJob = [pscustomobject]@{
                 Name = $Name
@@ -64,26 +67,54 @@ Describe "Work button preflight" {
         Should -Invoke Start-WinUtilJob -Times 0 -Exactly
     }
 
-    It "does not start the update-disable job when confirmation is declined" {
-        Mock Confirm-WPFUpdatesdisable { $false }
+    It "does not start the recommended update job when the restore point prompt is cancelled" {
+        Mock Request-WinUtilRestorePoint { $null }
 
-        Invoke-WPFButton -Button "WPFUpdatesdisable"
+        Invoke-WPFButton -Button "WPFUpdatessecurity"
 
-        Should -Invoke Confirm-WPFUpdatesdisable -Times 1 -Exactly
+        Should -Invoke Request-WinUtilRestorePoint -Times 1 -Exactly
         Should -Invoke Start-WinUtilJob -Times 0 -Exactly
     }
 
-    It "passes completed confirmation into the update-disable job" {
-        Invoke-WPFButton -Button "WPFUpdatesdisable"
+    It "takes the restore point inside the job before applying the recommended profile" {
+        Invoke-WPFButton -Button "WPFUpdatessecurity"
 
         Should -Invoke Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Disable Updates" -and $Parameters.UpdatesDisableConfirmed -eq $true
+            $Name -eq "Apply Recommended" -and $Parameters.CreateRestorePoint -eq $true
         }
 
         $jobParameters = $script:capturedJob.Parameters
         & $script:capturedJob.ScriptBlock @jobParameters
 
-        Should -Invoke Invoke-WPFUpdatesdisable -Times 1 -Exactly -ParameterFilter { $Confirmed }
-        Should -Invoke Confirm-WPFUpdatesdisable -Times 1 -Exactly
+        Should -Invoke Invoke-WinUtilRestorePointStep -Times 1 -Exactly
+        Should -Invoke Invoke-WPFUpdatessecurity -Times 1 -Exactly
+    }
+
+    It "skips the restore point when the user declines it" {
+        Mock Request-WinUtilRestorePoint { $false }
+
+        Invoke-WPFButton -Button "WPFUpdatessecurity"
+        $jobParameters = $script:capturedJob.Parameters
+        & $script:capturedJob.ScriptBlock @jobParameters
+
+        Should -Invoke Invoke-WinUtilRestorePointStep -Times 0 -Exactly
+        Should -Invoke Invoke-WPFUpdatessecurity -Times 1 -Exactly
+    }
+
+    It "applies nothing when the restore point step says to stop" {
+        Mock Invoke-WinUtilRestorePointStep { $false }
+
+        Invoke-WPFButton -Button "WPFUpdatessecurity"
+        $jobParameters = $script:capturedJob.Parameters
+        & $script:capturedJob.ScriptBlock @jobParameters
+
+        Should -Invoke Invoke-WPFUpdatessecurity -Times 0 -Exactly
+    }
+
+    It "does not ask about a restore point for other work buttons" {
+        Invoke-WPFButton -Button "WPFUpdatesdefault"
+
+        Should -Invoke Request-WinUtilRestorePoint -Times 0 -Exactly
+        Should -Invoke Start-WinUtilJob -Times 1 -Exactly -ParameterFilter { $Parameters.CreateRestorePoint -eq $false }
     }
 }

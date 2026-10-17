@@ -32,8 +32,8 @@ function Invoke-WPFButton {
     # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
     # every Button in $sync gets wired to this function, and they must not become jobs.
     $workButtons = @(
-        "WPFInstallUpgrade", "WPFAddUltPerf", "WPFRemoveUltPerf",
-        "WPFUpdatesdefault", "WPFUpdatesdisable", "WPFUpdatessecurity",
+        "WPFInstallUpgrade",
+        "WPFUpdatesdefault", "WPFUpdatessecurity",
         "WPFGetInstalledAppx"
     )
 
@@ -44,21 +44,31 @@ function Invoke-WPFButton {
         ($Button -notlike "WPFPanel*" -or $featureEntry.function)
 
     if ($isConfigWork -or $workButtons -contains $Button) {
-        $updatesDisableConfirmed = $false
-        if ($Button -eq "WPFUpdatesdisable") {
-            $updatesDisableConfirmed = Confirm-WPFUpdatesdisable
-            if (-not $updatesDisableConfirmed) {
+        # The Recommended update profile replaces system policy, so like the tweaks it offers a
+        # restore point once, before the job starts
+        $createRestorePoint = $false
+        if ($Button -eq "WPFUpdatessecurity") {
+            $createRestorePoint = Request-WinUtilRestorePoint -Subject "the Recommended Windows Update profile"
+            if ($null -eq $createRestorePoint) {
+                Write-WinUtilLog -Component "Updates" -Message "Recommended update profile cancelled at the restore point prompt."
                 return
             }
         }
 
         Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -Parameters @{
             Button = $Button
-            UpdatesDisableConfirmed = $updatesDisableConfirmed
+            CreateRestorePoint = $createRestorePoint
         } -ScriptBlock {
-            param($Button, $UpdatesDisableConfirmed)
+            param($Button, $CreateRestorePoint)
 
-            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed
+            if ($CreateRestorePoint) {
+                Step-WinUtilJob -Status "Creating restore point" -Percent 0
+                if (-not (Invoke-WinUtilRestorePointStep -Scope "Updates")) {
+                    return
+                }
+            }
+
+            Invoke-WPFButtonAction -Button $Button
         }
         return
     }
@@ -121,8 +131,7 @@ function Invoke-WPFButtonAction {
     #>
 
     Param (
-        [string]$Button,
-        [switch]$UpdatesDisableConfirmed
+        [string]$Button
     )
 
     # Check if button is defined in feature config with function or InvokeScript
@@ -162,13 +171,15 @@ function Invoke-WPFButtonAction {
         "WPFAdvanced" {Invoke-WPFPresets "Advanced" -checkboxfilterpattern "WPFTweak*"}
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
+        "WPFSelectNewPCKit" {Invoke-WPFPresets "NewPCKit" -checkboxfilterpattern "WPFInstall*"}
+        "WPFAddCustomApp" {
+            if (Add-WinUtilCustomApp -WingetId $sync.WPFCustomAppId.Text) {
+                $sync.WPFCustomAppId.Text = ""
+            }
+        }
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFOOSUbutton" {Invoke-WPFOOSU}
-        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -Enable}
-        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}

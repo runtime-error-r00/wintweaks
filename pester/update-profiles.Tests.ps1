@@ -4,7 +4,6 @@
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUpdatesdisable.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUpdatesdefault.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUpdatessecurity.ps1")
 
@@ -48,103 +47,6 @@ BeforeAll {
         '\Microsoft\Windows\WindowsUpdate\*',
         '\Microsoft\WindowsUpdate\*'
     )
-}
-
-Describe "Invoke-WPFUpdatesdisable" {
-    BeforeEach {
-        Mock Write-Host { }
-        Mock Write-WinUtilLog { }
-        Mock Show-WinUtilMessage { "Yes" }
-        Mock New-Item { }
-        Mock Set-ItemProperty { }
-        Mock Set-Service { }
-        Mock Stop-Service { }
-        Mock Remove-Item { }
-        Mock Get-ScheduledTask {
-            [pscustomobject]@{
-                TaskPath = $TaskPath
-            }
-        }
-        Mock Disable-ScheduledTask { }
-    }
-
-    It "sets update disable registry policy values" {
-        Invoke-WPFUpdatesdisable
-
-        Should -Invoke -CommandName New-Item -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and $Force -eq $true
-        }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
-                $Name -eq "NoAutoUpdate" -and
-                $Type -eq "DWord" -and
-                $Value -eq 1
-        }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -and
-                $Name -eq "AUOptions" -and
-                $Type -eq "DWord" -and
-                $Value -eq 1
-        }
-        Should -Invoke -CommandName Set-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -and
-                $Name -eq "DODownloadMode" -and
-                $Type -eq "DWord" -and
-                $Value -eq 0
-        }
-    }
-
-    It "disables update services and clears the SoftwareDistribution folder" {
-        Invoke-WPFUpdatesdisable
-
-        foreach ($expectedServiceName in @("BITS", "wuauserv", "UsoSvc")) {
-            $expected = $expectedServiceName
-            Should -Invoke -CommandName Stop-Service -Times 1 -Exactly -ParameterFilter {
-                $Name -eq $expected -and $Force -eq $true
-            }
-        }
-        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "BITS" -and $StartupType -eq "Disabled"
-        }
-        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "wuauserv" -and $StartupType -eq "Disabled"
-        }
-        Should -Invoke -CommandName Set-Service -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "UsoSvc" -and $StartupType -eq "Disabled"
-        }
-        Should -Invoke -CommandName Remove-Item -Times 1 -Exactly -ParameterFilter {
-            $Path -eq "C:\Windows\SoftwareDistribution\*" -and
-                $Recurse -eq $true -and
-                $Force -eq $true
-        }
-    }
-
-    It "disables update scheduled task paths" {
-        Invoke-WPFUpdatesdisable
-
-        foreach ($expectedTaskPath in $script:updateTaskPaths) {
-            $expected = $expectedTaskPath
-            Should -Invoke -CommandName Get-ScheduledTask -Times 1 -Exactly -ParameterFilter {
-                $TaskPath -eq $expected
-            }
-        }
-        Should -Invoke -CommandName Disable-ScheduledTask -Times $script:updateTaskPaths.Count -Exactly
-    }
-
-    It "requires confirmation before disabling updates" {
-        Mock Show-WinUtilMessage { "No" }
-
-        Invoke-WPFUpdatesdisable
-
-        Should -Invoke Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
-            $Title -eq "Disable Windows Update?" -and
-                $Button -eq "YesNo" -and
-                $Icon -eq "Warning"
-        }
-        Should -Not -Invoke Set-ItemProperty
-        Should -Not -Invoke Set-Service
-        Should -Not -Invoke Remove-Item
-    }
 }
 
 Describe "Invoke-WPFUpdatesdefault" {

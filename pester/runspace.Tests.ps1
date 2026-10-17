@@ -320,7 +320,6 @@ Describe "Public runspace callers" {
             (Join-Path $publicRoot "Invoke-WPFAppxRemoval.ps1"),
             (Join-Path $publicRoot "Invoke-WPFFeatureInstall.ps1"),
             (Join-Path $publicRoot "Invoke-WPFGetInstalled.ps1"),
-            (Join-Path $publicRoot "Invoke-WPFOOSU.ps1"),
             (Join-Path $publicRoot "Invoke-WPFtweaksbutton.ps1"),
             (Join-Path $publicRoot "Invoke-WPFundoall.ps1"),
             (Join-Path $privateRoot "Invoke-WinUtilISO.ps1"),

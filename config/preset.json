@@ -1,42 +1,47 @@
 {
   "Standard": [
-    "WPFTweaksActivity",
-    "WPFTweaksConsumerFeatures",
-    "WPFTweaksDisableExplorerAutoDiscovery",
-    "WPFTweaksWPBT",
-    "WPFTweaksLocation",
-    "WPFTweaksServices",
     "WPFTweaksTelemetry",
+    "WPFTweaksActivity",
+    "WPFTweaksLocation",
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksDeliveryOptimization",
+    "WPFTweaksWPBT",
+    "WPFTweaksIPv46",
     "WPFTweaksDiskCleanup",
-    "WPFTweaksDeleteTempFiles",
-    "WPFTweaksEndTaskOnTaskbar",
-    "WPFTweaksRestorePoint"
+    "WPFTweaksServices",
+    "WPFTweaksDisableExplorerAutoDiscovery"
   ],
   "Minimal": [
+    "WPFTweaksTelemetry",
     "WPFTweaksConsumerFeatures",
     "WPFTweaksWPBT",
-    "WPFTweaksServices",
-    "WPFTweaksTelemetry"
+    "WPFTweaksServices"
   ],
   "Advanced": [
-    "WPFTweaksRestorePoint",
-    "WPFTweaksActivity",
-    "WPFTweaksConsumerFeatures",
-    "WPFTweaksDisableExplorerAutoDiscovery",
-    "WPFTweaksWPBT",
-    "WPFTweaksLocation",
-    "WPFTweaksServices",
     "WPFTweaksTelemetry",
-    "WPFTweaksDeliveryOptimization",
-    "WPFTweaksDeleteTempFiles",
-    "WPFTweaksEndTaskOnTaskbar",
-    "WPFTweaksDisableStoreSearch",
-    "WPFTweaksRevertStartMenu",
-    "WPFTweaksWidget",
-    "WPFTweaksRemoveOneDrive",
+    "WPFTweaksActivity",
+    "WPFTweaksLocation",
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksWindowsAI",
-    "WPFTweaksRightClickMenu"
+    "WPFTweaksDeliveryOptimization",
+    "WPFTweaksWPBT",
+    "WPFTweaksIPv46",
+    "WPFTweaksDiskCleanup",
+    "WPFTweaksServices",
+    "WPFTweaksDisplay",
+    "WPFTweaksRightClickMenu",
+    "WPFTweaksDisableExplorerAutoDiscovery"
+  ],
+  "NewPCKit": [
+    "WPFInstall7zip",
+    "WPFInstallvlc",
+    "WPFInstallcpuz",
+    "WPFInstallhwinfo",
+    "WPFInstallcrystaldiskinfo",
+    "WPFInstallvc2015_64",
+    "WPFInstallvc2015_32",
+    "WPFInstalldotnet8",
+    "WPFInstalldirectx"
   ],
   "AppxDefault": [
     "WPFAppxMicrosoft_WindowsFeedbackHub",

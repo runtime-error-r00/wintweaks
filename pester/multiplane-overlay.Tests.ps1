@@ -1,10 +1,36 @@
 #===========================================================================
-# Tests - Multiplane Overlay
+# Tests - Registry Combobox State (Multiplane Overlay fixture)
 
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-    $script:config = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
-    $script:states = $script:config.WPFMultiplaneOverlay.registry
+    # The Multiplane Overlay combobox is no longer shipped, but its two-value states remain the
+    # best fixture for the generic registry combobox helpers
+    $script:states = @'
+[
+  {
+    "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+    "Name": "OverlayTestMode",
+    "Type": "DWord",
+    "DefaultValue": "0",
+    "Values": {
+      "Enabled": "<RemoveEntry>",
+      "Disabled (Compatibility)": "5",
+      "Fully Disabled": "5"
+    }
+  },
+  {
+    "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+    "Name": "DisableOverlays",
+    "Type": "DWord",
+    "DefaultValue": "0",
+    "Values": {
+      "Enabled": "<RemoveEntry>",
+      "Disabled (Compatibility)": "<RemoveEntry>",
+      "Fully Disabled": "1"
+    }
+  }
+]
+'@ | ConvertFrom-Json
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRegistryComboState.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilRegistryComboValue.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistryComboState.ps1")
@@ -12,21 +38,6 @@ BeforeAll {
     function Set-WinUtilRegistry {
         param($Name, $Path, $Type, $Value)
     }
-}
-
-Describe "Multiplane Overlay configuration" {
-    It "keeps every state and registry action in tweaks.json" {
-        $script:config.WPFMultiplaneOverlay.Type | Should -Be "Combobox"
-        $script:config.WPFMultiplaneOverlay.ComboItems | Should -BeOfType [string]
-        $comboItems = @($script:config.WPFMultiplaneOverlay.ComboItems -split "\|")
-        $comboItems | Should -Be @("Enabled", "Disabled (Compatibility)", "Fully Disabled")
-        $script:states.Count | Should -Be 2
-        $script:states[0].Values.PSObject.Properties.Name | Should -Be $comboItems
-        $script:states[0].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "5", "5")
-        $script:states[1].Values.PSObject.Properties.Value | Should -Be @("<RemoveEntry>", "<RemoveEntry>", "1")
-    }
-
-
 }
 
 Describe "Get-WinUtilRegistryComboState" {

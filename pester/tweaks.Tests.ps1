@@ -8,6 +8,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Request-WinUtilRestorePoint.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilRestorePointStep.ps1")
 
     function Set-WinUtilService {
         param($Name, $StartupType)
@@ -23,9 +25,6 @@ BeforeAll {
     }
     function Remove-WinUtilProvisionedAPPX {
         param($PackageList)
-    }
-    function Set-WinUtilDNS {
-        param($DNSProvider)
     }
     function Invoke-WPFRunspace {
         param($ArgumentList, $ParameterList, [scriptblock]$ScriptBlock)
@@ -326,15 +325,13 @@ Describe "Invoke-WPFtweaksbutton" {
         $script:sync = [Hashtable]::Synchronized(@{
             ActiveJob = $null
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
-            WPFchangedns = [pscustomobject]@{
-                text = "Cloudflare"
-            }
         })
         $script:capturedTweaksJob = $null
 
         Mock Invoke-WinUtilTweaks { }
-        # the real one returns $true on success, and the workflow now stops when it does not
-        Mock Set-WinUtilDNS { return $true }
+        # the user answered No at the restore point prompt unless a test says otherwise
+        Mock Request-WinUtilRestorePoint { $false }
+        Mock Invoke-WinUtilRestorePointStep { $true }
         Mock Invoke-WPFUIThread { }
         Mock Write-WinUtilLog { }
         Mock Step-WinUtilJob { }
@@ -353,18 +350,37 @@ Describe "Invoke-WPFtweaksbutton" {
         Remove-Variable -Name capturedTweaksJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "prompts and exits when nothing is selected and DNS is left at the default" {
-        $script:sync.WPFchangedns.text = "Default"
-
+    It "prompts and exits when nothing is selected" {
         Invoke-WPFtweaksbutton
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please check the tweaks you wish to perform."
         }
+        Should -Invoke -CommandName Request-WinUtilRestorePoint -Times 0 -Exactly
         Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
     }
 
-    It "queues a tweak job with the selection and DNS provider" {
+    It "asks about the restore point once for the whole selection" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:sync.selectedTweaks.Add("WPFTweaksServices")
+
+        Invoke-WPFtweaksbutton
+
+        Should -Invoke -CommandName Request-WinUtilRestorePoint -Times 1 -Exactly -ParameterFilter {
+            $Subject -eq "2 selected tweak(s)"
+        }
+    }
+
+    It "does not start a job when the restore point prompt is cancelled" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        Mock Request-WinUtilRestorePoint { $null }
+
+        Invoke-WPFtweaksbutton
+
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "queues a tweak job with the selection and the restore point choice" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedTweaks.Add("WPFTweaksServices")
 
@@ -375,10 +391,10 @@ Describe "Invoke-WPFtweaksbutton" {
         }
         $script:capturedTweaksJob.Parameters.Tweaks | Should -HaveCount 2
         $script:capturedTweaksJob.Parameters.Tweaks[0] | Should -Be "WPFTweaksTelemetry"
-        $script:capturedTweaksJob.Parameters.DnsProvider | Should -Be "Cloudflare"
+        $script:capturedTweaksJob.Parameters.CreateRestorePoint | Should -BeFalse
     }
 
-    It "applies every selected tweak and the DNS provider inside the job body" {
+    It "applies every selected tweak inside the job body without a restore point when declined" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedTweaks.Add("WPFTweaksServices")
 
@@ -386,9 +402,7 @@ Describe "Invoke-WPFtweaksbutton" {
         $jobParameters = $script:capturedTweaksJob.Parameters
         & $script:capturedTweaksJob.ScriptBlock @jobParameters
 
-        Should -Invoke -CommandName Set-WinUtilDNS -Times 1 -Exactly -ParameterFilter {
-            $DNSProvider -eq "Cloudflare"
-        }
+        Should -Invoke -CommandName Invoke-WinUtilRestorePointStep -Times 0 -Exactly
         Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 2 -Exactly
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksTelemetry (1/2)" -and $Percent -eq 0
@@ -398,46 +412,36 @@ Describe "Invoke-WPFtweaksbutton" {
         }
     }
 
-    It "stops the run when the DNS change fails" {
-        # carrying on would leave the machine half configured, so the job ends and reports it
-        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
-        Mock Set-WinUtilDNS { return $false }
-
-        Invoke-WPFtweaksbutton
-        $jobParameters = $script:capturedTweaksJob.Parameters
-
-        { & $script:capturedTweaksJob.ScriptBlock @jobParameters } | Should -Throw -ExpectedMessage "*DNS change to Cloudflare failed*"
-        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 0 -Exactly
-    }
-
-    It "carries on when the DNS change succeeds" {
-        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
-        Mock Set-WinUtilDNS { return $true }
-
-        Invoke-WPFtweaksbutton
-        $jobParameters = $script:capturedTweaksJob.Parameters
-        & $script:capturedTweaksJob.ScriptBlock @jobParameters
-
-        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 1 -Exactly
-    }
-
-    It "takes the restore point before any other tweak runs" {
-        $script:sync.selectedTweaks.Add("WPFTweaksRestorePoint")
+    It "takes the restore point before any tweak runs when accepted" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:appliedOrder = [System.Collections.Generic.List[string]]::new()
+        Mock Request-WinUtilRestorePoint { $true }
+        Mock Invoke-WinUtilRestorePointStep { $script:appliedOrder.Add("RestorePoint"); $true }
         Mock Invoke-WinUtilTweaks { $script:appliedOrder.Add($CheckBox) }
 
         Invoke-WPFtweaksbutton
         $jobParameters = $script:capturedTweaksJob.Parameters
         & $script:capturedTweaksJob.ScriptBlock @jobParameters
 
-        $script:appliedOrder | Should -Be @("WPFTweaksRestorePoint", "WPFTweaksTelemetry")
+        $script:appliedOrder | Should -Be @("RestorePoint", "WPFTweaksTelemetry")
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Creating restore point" -and $Percent -eq 0
         }
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Applying WPFTweaksTelemetry (2/2)" -and $Percent -eq 50
         }
+    }
+
+    It "applies nothing when the restore point step says to stop" {
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        Mock Request-WinUtilRestorePoint { $true }
+        Mock Invoke-WinUtilRestorePointStep { $false }
+
+        Invoke-WPFtweaksbutton
+        $jobParameters = $script:capturedTweaksJob.Parameters
+        & $script:capturedTweaksJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Invoke-WinUtilTweaks -Times 0 -Exactly
     }
 }
 

@@ -221,16 +221,18 @@ Describe "Invoke-WinutilThemeChange" {
         Test-Path -Path (Join-Path $script:testRoot "preferences.ini") | Should -BeFalse
     }
 
-    It "uses the system dark-mode toggle when Auto theme is selected" {
+    It "uses the Windows dark-mode setting when Auto theme is selected" {
         $script:testRoot = New-WinUtilPreferencesTestRoot
         $global:winutildir = $script:testRoot
         New-WinUtilPreferenceSync
-        Mock Get-WinUtilToggleStatus { return $true }
+        Mock Get-ItemProperty {
+            [pscustomobject]@{ AppsUseLightTheme = 0; SystemUsesLightTheme = 0 }
+        } -ParameterFilter { $Path -like "*Themes\Personalize" }
 
         Invoke-WinutilThemeChange -theme "Auto"
 
-        Should -Invoke -CommandName Get-WinUtilToggleStatus -Times 1 -Exactly -ParameterFilter {
-            $ToggleName -eq "WPFToggleDarkMode"
+        Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
+            $Path -like "*Themes\Personalize"
         }
         $script:sync.preferences.theme | Should -Be "Auto"
         $script:sync.Form.Resources.ContainsKey("MainBackgroundColor") | Should -BeTrue
