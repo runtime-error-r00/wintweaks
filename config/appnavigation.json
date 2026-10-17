@@ -52,25 +52,32 @@
         "Order": "2",
         "Description": "Expand all application categories"
     },
+    "WPFSelectNewPCKit": {
+        "Content": "Select New PC Kit",
+        "Category": "__Selection",
+        "Type": "Button",
+        "Order": "3",
+        "Description": "Select the essentials for a freshly installed PC: 7-Zip, VLC, CPU-Z, HWiNFO, CrystalDiskInfo, Visual C++ runtimes, .NET Desktop 8 and DirectX"
+    },
     "WPFClearInstallSelection": {
         "Content": "Clear Selection",
         "Category": "__Selection",
         "Type": "Button",
-        "Order": "3",
+        "Order": "4",
         "Description": "Clear the selection of applications"
     },
     "WPFGetInstalled": {
         "Content": "Show Installed Apps",
         "Category": "__Selection",
         "Type": "Button",
-        "Order": "4",
+        "Order": "5",
         "Description": "Show installed applications"
     },
     "WPFselectedAppsButton": {
         "Content": "Selected Apps: 0",
         "Category": "__Selection",
         "Type": "Button",
-        "Order": "5",
+        "Order": "6",
         "Description": "Show the selected applications"
     },
     "WPFInstallFOSSInfo": {

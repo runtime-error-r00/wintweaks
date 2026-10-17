@@ -35,6 +35,10 @@ function Get-WinUtilAppEntryHandlers {
         RightClick = {
             # Store the selected app in a global variable so it can be used in the popup
             $sync.appPopupSelectedApp = $this.Tag
+            if ($sync.appPopupRemoveButton) {
+                $isCustomApp = $sync.configs.applicationsHashtable[$this.Tag].custom -eq $true
+                $sync.appPopupRemoveButton.Visibility = if ($isCustomApp) { "Visible" } else { "Collapsed" }
+            }
             # Set the popup position to the current mouse position
             $sync.appPopup.PlacementTarget = $this
             $sync.appPopup.IsOpen = $true

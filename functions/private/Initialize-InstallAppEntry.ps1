@@ -49,7 +49,8 @@ function Initialize-InstallAppEntry {
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::FontSizeProperty, "AppEntryFontSize")
         $fallback.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, "ToggleButtonOnColor")
         [void]$icon.Children.Add($fallback)
-        if ($app.link) {
+        # A custom app's link is its winget catalog page, whose favicon would say nothing about it
+        if ($app.link -and $app.custom -ne $true) {
             $fallback.Visibility = "Collapsed"
             $logo = New-Object Windows.Controls.Image
             $logo.Stretch = [Windows.Media.Stretch]::Uniform

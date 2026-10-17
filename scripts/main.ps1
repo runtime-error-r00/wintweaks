@@ -1,24 +1,13 @@
-Write-Host @"
-    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
- CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T
-C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C       CCCCCC        T:::::T                T:::::T
-C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT
-CC:::::::::::::::C       T:::::::::T            T:::::::::T
-CCC::::::::::::C         T:::::::::T            T:::::::::T
-  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT
+Write-Host @'
+ __        ___      _____                    _
+ \ \      / (_)_ __|_   _|_      _____  __ _| | _____
+  \ \ /\ / /| | '_ \ | | \ \ /\ / / _ \/ _` | |/ / __|
+   \ V  V / | | | | || |  \ V  V /  __/ (_| |   <\__ \
+    \_/\_/  |_|_| |_||_|   \_/\_/ \___|\__,_|_|\_\___/
 
-====Chris Titus Tech=====
-=====Windows Toolbox=====
-"@
+  Tweaks, apps and repairs for Windows 10/11
+  Based on WinUtil by Chris Titus Tech
+'@
 
 # Load the configuration files
 
@@ -26,6 +15,8 @@ $sync.configs.applicationsHashtable = @{}
 $sync.configs.applications.PSObject.Properties | ForEach-Object {
     $sync.configs.applicationsHashtable[$_.Name] = $_.Value
 }
+# Winget apps the user added by ID in an earlier session
+Import-WinUtilCustomAppList
 
 $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
