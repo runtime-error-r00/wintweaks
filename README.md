@@ -1,91 +1,93 @@
-# Chris Titus Tech's Windows Utility
+# WinTweaks
 
-[![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
-![Downloads](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=Total%20Downloads&style=for-the-badge)
-[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ?theme=default-inverted&style=for-the-badge)](https://discord.gg/RUbZUZyByQ)
+A Windows 10/11 toolbox that keeps only what is essential and actually works: a curated app installer, a short list of tested tweaks that explain themselves, system repairs, Windows Update profiles and a Windows 11 ISO creator.
 
-A curated compilation of Windows system tasks streamline **installs**, debloat with **tweaks**, troubleshoot with **config**, and configure **Windows updates**. Run it fresh on every new Windows install.
-
-![Title Screen](docs/src/assets/branding/title-screen.png)
-
+WinTweaks is based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech.
 
 ---
 
 ## Quick Start
 
-> **WinUtil must be run as Administrator** because it performs system-wide changes.
+> **WinTweaks must run as Administrator** because it changes system settings. If you start it from a normal window it asks for elevation and relaunches itself.
 
-Open PowerShell or Terminal as admin, then run:
+Open PowerShell or Terminal and run:
 
-**Stable Branch (recommended)**
 ```ps1
-irm https://christitus.com/win | iex
+irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex
 ```
 
-**Development Branch**
-```ps1
-irm https://christitus.com/windev | iex
-```
+Nothing is downloaded to disk or installed: the script runs from memory.
+
+<!-- Short link: when a domain is available, point a redirect (301/302) at the URL above,
+     then replace the command with: irm https://YOUR-DOMAIN/win | iex -->
+
+> `irm | iex` runs code from the internet. Read the source first, and to always run the same build, use a specific release instead of `latest`:
+> `irm https://github.com/runtime-error-r00/wintweaks/releases/download/<tag>/winutil.ps1 | iex`
 
 ### How to open an admin terminal
 
-- **Start menu:** Right-click Start → *Windows PowerShell (Admin)* or *Terminal (Admin)*
-- **Search:** Press the `Windows key`, and type `PowerShell` or `Terminal`, then `Ctrl + Shift + Enter`
+- **Start menu:** Right-click Start → *Terminal (Admin)* or *Windows PowerShell (Admin)*
+- **Search:** Press the `Windows key`, type `PowerShell` or `Terminal`, then `Ctrl + Shift + Enter`
+
+---
+
+## What's inside
+
+| Page | What it does |
+|------|--------------|
+| **Install** | About 100 curated apps in 12 categories, installed with winget (Chocolatey optional). **New PC Kit** selects the essentials for a fresh install, and you can add any winget package by its ID. |
+| **Tweaks** | 15 tested tweaks grouped into Privacy, System, Performance, Interface and Advanced. Each has an info icon that explains what it changes and a coloured risk dot. A System Restore point is offered once, when you press **Run Tweaks**. |
+| **Config** | Windows features (WSL, Hyper-V, Sandbox...), repairs (network reset, SFC/DISM, Windows Update reset, winget reinstall), classic control panels and remote access. |
+| **Updates** | Recommended profile (feature updates deferred 1 year, quality updates 4 days) or back to Windows defaults. |
+| **Win11 Creator** | Build a customized Windows 11 ISO from an official image. |
+
+Every tweak can be undone from **Undo Selected Tweaks**, except one-off actions such as Disk Cleanup.
 
 ---
 
 ## Automation / Presets
 
-Apply a predefined configuration without manual selection:
+Apply a preset without the window:
 
 ```powershell
-& ([ScriptBlock]::Create((irm https://christitus.com/win))) -Preset Standard
+& ([ScriptBlock]::Create((irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1))) -Preset Standard
 ```
 
 | Preset | Description |
 |--------|-------------|
-| `Standard` | Balanced defaults for most users |
-| `Minimal` | Minimal changes to suit every user |
-| `Advanced` | Deep tweaks for power users |
+| `Standard` | Recommended baseline for most PCs |
+| `Minimal` | Smaller, lower-impact set |
+| `Advanced` | Standard plus Windows AI removal, visual effects and the classic right-click menu |
 
-To view exactly what each preset does, see:
-https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json
+Runs without a window always try to create a restore point before applying tweaks. See [config/preset.json](config/preset.json) for exactly what each preset selects.
+
+---
+
+## Publishing a release
+
+The launch command downloads the newest **stable** GitHub release. To publish one:
+
+1. Open **Actions** → **Release WinTweaks** → **Run workflow**.
+2. Leave **pre-release** unticked.
+
+The workflow compiles `winutil.ps1`, tags the commit with today's date (`yy.MM.dd`) and attaches the script to the release. A pre-release is skipped by `latest`; run it with [windev.ps1](windev.ps1).
 
 ---
 
 ## Build & Develop
 
-See https://github.com/ChrisTitusTech/winutil/blob/main/.github/CONTRIBUTING.md
+```powershell
+.\Compile.ps1        # builds winutil.ps1 from the sources
+.\Compile.ps1 -Run   # builds and launches it
+```
+
+Contributor and agent rules are in [AGENTS.md](AGENTS.md); the architecture is described in [SPEC.md](SPEC.md).
 
 ---
 
-## Resources
+## Credits
 
-- [Official Documentation](https://winutil.christitus.com/)
-- [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
-- [ChrisTitus.com Article](https://christitus.com/windows-tool/)
-- [Known Issues](https://winutil.christitus.com/knownissues/)
-- [Report an Issue](https://github.com/ChrisTitusTech/winutil/issues)
+- [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech and its contributors, the base of this project.
+- The tweak and app selection started from a friend's WinTweaks IT tool.
 
----
-
-## Support
-
-- Leave a ⭐ to show support!
-- Faster Dotnet Implementation for sale here: https://www.cttstore.com/windows-toolbox
-
-## Sponsors
-
-These are the sponsors that help keep this project alive with monthly contributions.
-
-<!-- sponsors --><a href="https://github.com/dwelfusius"><img src="https:&#x2F;&#x2F;github.com&#x2F;dwelfusius.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mews-se"><img src="https:&#x2F;&#x2F;github.com&#x2F;mews-se.png" width="60px" alt="User avatar: Martin" /></a><a href="https://github.com/jdiegmueller"><img src="https:&#x2F;&#x2F;github.com&#x2F;jdiegmueller.png" width="60px" alt="User avatar: Jason A. Diegmueller" /></a><a href="https://github.com/robertsandrock"><img src="https:&#x2F;&#x2F;github.com&#x2F;robertsandrock.png" width="60px" alt="User avatar: RMS" /></a><a href="https://github.com/paulsheets"><img src="https:&#x2F;&#x2F;github.com&#x2F;paulsheets.png" width="60px" alt="User avatar: Paul" /></a><a href="https://github.com/djones369"><img src="https:&#x2F;&#x2F;github.com&#x2F;djones369.png" width="60px" alt="User avatar: Dave J  (WhamGeek)" /></a><a href="https://github.com/anthonymendez"><img src="https:&#x2F;&#x2F;github.com&#x2F;anthonymendez.png" width="60px" alt="User avatar: Anthony Mendez" /></a><a href="https://github.com/FatBastard0"><img src="https:&#x2F;&#x2F;github.com&#x2F;FatBastard0.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/DursleyGuy"><img src="https:&#x2F;&#x2F;github.com&#x2F;DursleyGuy.png" width="60px" alt="User avatar: DursleyGuy" /></a><a href="https://github.com/DwayneTheRockLobster1"><img src="https:&#x2F;&#x2F;github.com&#x2F;DwayneTheRockLobster1.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/KieraKujisawa"><img src="https:&#x2F;&#x2F;github.com&#x2F;KieraKujisawa.png" width="60px" alt="User avatar: Kiera Meredith" /></a><a href="https://github.com/seanh1995"><img src="https:&#x2F;&#x2F;github.com&#x2F;seanh1995.png" width="60px" alt="User avatar: Sean (ANGRYxScotsman)" /></a><a href="https://github.com/josencarnacao"><img src="https:&#x2F;&#x2F;github.com&#x2F;josencarnacao.png" width="60px" alt="User avatar: José Encarnação" /></a><!-- sponsors -->
-
-*<sub>Sponsors with a recurring subscription also get access to the .NET alternative.</sub>
-
----
-
-## Contributors
-
-[![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
-
-Thanks to everyone who has contributed time and effort to this project. Keep rocking 🍻
+Licensed under the MIT License, see [LICENSE](LICENSE).

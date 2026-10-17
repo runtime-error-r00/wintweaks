@@ -1,6 +1,6 @@
 ---
 title: Applications
-description: Use the Applications tab in WinUtil to install, upgrade, uninstall, and review supported apps.
+description: Use the Applications tab in WinTweaks to install, upgrade, uninstall, and review a curated list of apps, plus any winget package you add.
 sidebar:
   order: 2
 ---
@@ -35,6 +35,16 @@ Use the Applications tab to install, upgrade, uninstall, and review supported ap
 * This clears all current selections.
 
 ![Clear app selections](../../../assets/screenshots/install-pics/clear-selected-apps.png)
+</TabItem>
+<TabItem label="New PC Kit">
+* Click `Select New PC Kit` to select the essentials for a freshly installed PC: 7-Zip, VLC, CPU-Z, HWiNFO, CrystalDiskInfo, the Visual C++ 2015-2022 runtimes, .NET Desktop 8 and the DirectX runtime.
+* Review the selection, then click `Install/Upgrade Applications`.
+</TabItem>
+<TabItem label="Custom Apps">
+* Type any winget package ID in **Add any winget app** (for example `Mozilla.Firefox`) and press `Enter` or click `Add to list`.
+* The app appears under the **Custom** category and stays there in later sessions. The list is saved in `%LocalAppData%\winutil\custom-apps.json`.
+* Right-click a custom app and choose the remove button to take it off the list. This does not uninstall it.
+* Look up an ID with `winget search <name>`. An ID that does not exist is reported by winget when you install.
 </TabItem>
 <TabItem label="Collapse & Expand Categories">
 * Click `Collapse All Categories` to close every category and shrink the list to just the category headers.

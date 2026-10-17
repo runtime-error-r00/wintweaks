@@ -1,0 +1,106 @@
+name: Release WinTweaks
+
+# Publishes the compiled script as a GitHub release asset. A stable release becomes "latest",
+# which is what the one-line launcher downloads:
+#   irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex
+# A pre-release is skipped by "latest" and only reachable through windev.ps1.
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Publish as a pre-release (not picked up by the one-line launcher)'
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Compile project
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+        continue-on-error: false
+
+      - name: Set Version to Todays Date
+        id: extract_version
+        run: |
+          $version = (Get-Date -Format "yy.MM.dd")
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Create Tag
+        run: |
+          $tagExists = git tag -l $env:VERSION
+          if ($tagExists -eq "") {
+            git tag $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to create tag $env:VERSION"
+              exit 1
+            }
+            git push origin $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to push tag $env:VERSION"
+              exit 1
+            }
+          } else {
+            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
+          }
+        shell: pwsh
+
+      - name: Upload compiled script
+        uses: actions/upload-artifact@v7
+        with:
+          name: winutil-ps1
+          path: ./winutil.ps1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download compiled script
+        uses: actions/download-artifact@v8
+        with:
+          name: winutil-ps1
+
+      - name: Set version from build job
+        run: echo "VERSION=${{ needs.build.outputs.version }}" >> $GITHUB_ENV
+
+      - name: Generate Release Notes
+        id: generate_notes
+        uses: release-drafter/release-drafter@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-name: release-drafter.yml
+          version: ${{ env.VERSION }}
+
+      - name: Create and Upload Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: ${{ inputs.prerelease && 'Pre-Release' || 'WinTweaks' }} ${{ env.VERSION }}
+          body: |
+            ${{ steps.generate_notes.outputs.body }}
+
+            Run it from an elevated PowerShell or Terminal:
+
+            ```powershell
+            irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex
+            ```
+          append_body: false
+          files: ./winutil.ps1
+          prerelease: ${{ inputs.prerelease }}
+          make_latest: ${{ !inputs.prerelease }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

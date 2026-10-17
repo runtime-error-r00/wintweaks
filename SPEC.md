@@ -8,6 +8,8 @@ Project contract for WinUtil — what the project is, how it's built, and how it
 
 WinUtil is a Windows PowerShell utility with a WPF interface. The repository is maintained as modular source, but the distributed artifact is one compiled PowerShell script.
 
+This repository is WinTweaks, a fork of WinUtil branded as WinTweaks in the interface. It keeps the WinUtil architecture and internal names (`WinUtil`/`WPF` function prefixes, `winutil.ps1`, `%LocalAppData%\winutil`) and narrows the content to a curated app catalog and a short list of tested tweaks.
+
 ### Stack
 
 - Language: Windows PowerShell / PowerShell.
@@ -81,15 +83,15 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Configuration Contract
 
 - Config files must remain valid JSON and compile cleanly through `ConvertFrom-Json`.
-- `config/dns.json` opts unfiltered providers into Fastest selection with `BenchmarkEligible: true`; missing or false values exclude a provider from the TCP latency benchmark.
-- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.
-- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems.
+- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link. Install tab category chips in `xaml/inputXML.xaml` and `Start-WinUtilUserInterface` must match its categories. Apps the user adds by winget ID are kept outside the repository in `%LocalAppData%\winutil\custom-apps.json` and loaded into the Custom category at startup.
+- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems. Checkbox tweaks carry a plain-language `Description`, shown from the row's info icon, and a `risk` of `low`, `medium` or `high`, shown as a coloured dot.
 - Preset and navigation files reference valid config keys. Renaming a config key requires updating all presets, UI references, docs, and code paths together.
 
 ## Safety Requirements
 
 - Registry, service, package manager, Windows Update, AppX removal, and ISO operations affect the host system and are treated as high-risk.
 - Tweak changes include undo metadata when the schema supports it, so changes stay reversible.
+- A System Restore point is offered once per run, when the user starts applying tweaks or the Recommended update profile, never per checkbox. Runs without a window always try to create one and continue with a logged warning if they cannot.
 - ISO workflows never modify the user's original ISO file; they work on copied/mounted content.
 
 ## Docs Site (Astro)
@@ -114,3 +116,5 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Release Artifact
 
 GitHub Actions is responsible for producing the release `winutil.ps1` from repository sources. A release is considered valid only if the generated script came from the compile process, not from direct manual edits to `winutil.ps1`.
+
+The manually triggered `release.yaml` workflow compiles the script, tags the commit with the build date and attaches `winutil.ps1` to a GitHub release. A stable release becomes `latest`, which the documented launcher downloads (`irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex`); a pre-release is reachable only through `windev.ps1`. The same release URL is used by the elevation relaunch in `scripts/start.ps1` and the export command in `Invoke-WPFImpex`, so a change of URL updates all three.

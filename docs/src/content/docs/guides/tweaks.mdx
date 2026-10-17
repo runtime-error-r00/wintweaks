@@ -1,91 +1,67 @@
 ---
 title: Tweaks
-description: Apply recommended Windows changes, review optional presets, and adjust supporting settings such as DNS and power plans.
+description: Apply a short list of tested Windows tweaks, see what each one does from its info icon, and get a restore point before anything changes.
 sidebar:
   order: 3
 ---
 
-import YouTubeEmbed from '../../../components/YouTubeEmbed.astro';
-
-Use the Tweaks tab to apply recommended Windows changes, review optional presets, and adjust a few supporting settings such as DNS and power plans. Start with a preset unless you already know which individual tweaks you want.
+Use the Tweaks tab to apply a short list of tested Windows changes. Every tweak shows what it does and how risky it is, and you are offered a System Restore point once, at the moment you apply your selection.
 
 ![Image of Tweaks Tab](../../../assets/screenshots/tweaks-tab-new.png)
+
+### Reading a tweak
+
+Each row has three parts:
+
+* **Checkbox**: selects the tweak. Ticking a box changes nothing on its own.
+* **Risk dot**: green is low risk, orange is medium (read the side effects), red is high (only if you know you need it).
+* **Info icon**: hover it to read, in plain language, what the tweak changes and what side effects to expect.
+
+The tweaks are grouped into **Privacy**, **System**, **Performance**, **Interface** and **Advanced - Caution**.
 
 ### Recommended Selections
 Use the quick-selection buttons at the top of the Tweaks tab to speed up setup:
 
-* **Standard**: Selects the recommended baseline set of tweaks for most users.
-* **Minimal**: Selects a smaller, lower-impact set of common tweaks.
-* **Advanced**: Selects a focused set of safer advanced tweaks. This preset intentionally skips restore point creation and cleanup tasks to avoid a long runtime.
+* **Standard**: The recommended baseline for most PCs: privacy, system and cleanup tweaks.
+* **Minimal**: A smaller, lower-impact set.
+* **Advanced**: Standard plus Windows AI removal, best-performance visual effects and the classic right-click menu.
 * **Clear**: Clears all currently selected tweaks.
 * **Select Installed Tweaks**: Best-effort detection for tweaks already applied to your system.
 
-### Run Tweaks
-* **Open the Tweaks tab**: Navigate to the **Tweaks** tab in the application.
-* **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
-* **Run Tweaks**: After selecting the desired tweaks, click **Run Tweaks** at the bottom of the screen.
-
 :::note
-To see what each preset includes, view [preset.json](https://github.com/ChrisTitusTech/winutil/blob/main/config/preset.json).
+To see what each preset includes, view [preset.json](https://github.com/runtime-error-r00/wintweaks/blob/main/config/preset.json).
 :::
 
-When a listed service does not exist, WinUtil logs a warning and skips it. The remaining services and tweaks still run.
+### Run Tweaks
+1. Select the tweaks you want, or start from a preset.
+2. Click **Run Tweaks** at the bottom of the screen.
+3. Answer the restore point question:
+   * **Yes** creates a System Restore point, then applies the tweaks.
+   * **No** applies the tweaks without one.
+   * **Cancel** goes back without changing anything.
+
+If the restore point cannot be created (for example, System Protection is blocked by policy), you are asked whether to continue without it. Runs started with `-Preset` or `-Config`, which have no window, always try to create one first and continue with a warning in the log if they cannot.
+
+When a listed service does not exist, WinTweaks logs a warning and skips it. The remaining services and tweaks still run.
 
 :::caution
-Some tweaks take effect immediately, while others may require Explorer to restart, a sign-out, or a full reboot.
+Some tweaks take effect immediately, while others need File Explorer to restart, a sign-out, or a full reboot. The info icon says which.
 :::
 
 ### Undo Tweaks
-* **Open the Tweaks tab**: Go to the **Tweaks** tab located next to **Install**.
-* **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
-* **Undo Tweaks**: Click **Undo Selected Tweaks** at the bottom of the screen to apply the changes.
+1. Select the tweaks you want to revert.
+2. Click **Undo Selected Tweaks**.
+
+One-off actions, such as Disk Cleanup, have nothing to undo. Windows AI removal restores its settings, but removed apps have to be reinstalled from the Microsoft Store.
+
+### Performance Power Plan
+
+The **Performance Power Plan - Enable** tweak creates and activates a plan named *WinTweaks Performance*: the processor stays at 100%, the hard disk never turns off, sleep and hibernation timeouts are off and the wireless adapter runs at maximum performance. It reduces battery life on laptops. Undo switches back to Balanced and deletes the plan.
 
 ### AppX Packages
 
 Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Select one or more packages, then choose **Install Selected** or **Remove Selected**.
 
-When installing a selected package, WinUtil first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, WinUtil installs the package from the Microsoft Store through WinGet when a Store product ID is available.
+When installing a selected package, WinTweaks first registers an existing local `AppxManifest.xml`. If no usable local manifest remains, it installs the package from the Microsoft Store through WinGet when a Store product ID is available.
 
 During AppX installation or removal, the window-level progress bar shows the current package, completed package count, and overall progress. The Windows taskbar also reflects progress and the final success or failure state.
-
-### Essential Tweaks
-Essential Tweaks are the safest starting point for most systems. They focus on lower-risk changes that improve usability, reduce noise, and avoid the more invasive changes found in advanced options.
-
-### Advanced Tweaks (CAUTION)
-Advanced Tweaks are for users who understand the side effects of deeper Windows changes. Create a restore point first, review each item, and avoid treating the full advanced list as a one-click baseline.
-
-### O&O ShutUp10++
-[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with one click. It is a free privacy tool for Windows that helps users manage telemetry, update behavior, and app permission settings.
-
-Watch a walkthrough:
-
-<YouTubeEmbed id="3HvNr8eMcv0" title="O&O ShutUp10++ walkthrough" />
-
-### DNS
-
-Use the DNS section to switch both IPv4 and IPv6 DNS providers without editing adapter settings manually. Choose the option that best matches your priority: speed, filtering, or privacy.
-
-* **Default**: Uses the default DNS settings configured by your ISP or network.
-* **DHCP**: Automatically acquires DNS settings from the DHCP server.
-* **Fastest**: Compares TCP port 53 connection times to Google and Cloudflare, then applies the quicker provider. Filtering providers are excluded. If both probes fail, existing DNS settings are preserved. The scan takes up to about three seconds; connection time is only a rough latency estimate, not a DNS lookup or DNS-over-HTTPS performance test.
-* [**Google**](https://developers.google.com/speed/public-dns?hl=en): A reliable and fast DNS service provided by Google.
-* [**Cloudflare**](https://developers.cloudflare.com/1.1.1.1/): Known for speed and privacy, Cloudflare DNS is a popular choice for enhancing internet performance.
-* [**Cloudflare_Malware**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malicious%20content%3A): Provides additional protection by blocking malware sites.
-* [**Cloudflare_Malware_Adult**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malware%20and%20adult%20content%3A): Blocks both malware and adult content, offering more comprehensive filtering.
-* [**Open_DNS**](https://www.opendns.com/setupguide/#familyshield): Offers customizable filtering and enhanced security features.
-* [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
-* [**AdGuard_Ads_Trackers**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, and other unwanted DNS requests. Visit the website and sign in for a dashboard, statistics, and additional server-side customization.
-* [**AdGuard_Ads_Trackers_Malware_Adult**](https://adguard-dns.io/en/welcome.html): AdGuard DNS blocks ads, trackers, malware, and adult content, and enables Safe Search and Safe Mode where possible.
-
-### Customize Preferences
-
-Use Customize Preferences for smaller visual and behavior changes that do not fit the main tweak presets.
-
-### Performance Plans
-
-Use Performance Plans to enable or remove the Ultimate Performance power profile.
-
-#### Add and activate the Ultimate Performance Profile:
-* Enables and activates the Ultimate Performance Profile to enhance system performance by minimizing latency and increasing efficiency.
-#### Remove Ultimate Performance Profile:
-* Deactivates the Ultimate Performance Profile, changing the system to the Balanced Profile.
