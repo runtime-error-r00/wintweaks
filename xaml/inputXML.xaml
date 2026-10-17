@@ -11,7 +11,7 @@
         Height="Auto"
         MinWidth="800"
         MinHeight="600"
-        Title="WinUtil">
+        Title="WinTweaks">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -78,6 +78,19 @@
                 <Setter Property="Foreground" Value="{DynamicResource LinkHoverForegroundColor}" />
                 <Setter Property="TextDecorations" Value="Underline" />
                 <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!-- Info icon beside a tweak or feature: hovering it shows what the entry does -->
+    <Style TargetType="TextBlock" x:Key="InfoIconStyle">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="{DynamicResource IconFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource InfoIconColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="Help" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource AccentColor}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -357,52 +370,42 @@
             <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
         </Style>
+        <!-- Sidebar navigation item: flat row, accent bar and tint on the selected page -->
         <Style x:Key="TabToggleButton" TargetType="{x:Type ToggleButton}">
-            <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+            <Setter Property="Margin" Value="0,2,0,2"/>
             <Setter Property="Content" Value=""/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="FontFamily" Value="{DynamicResource FontFamily}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border Name="ButtonGlow"
+                        <Border Name="NavItem"
                                 Background="{TemplateBinding Background}"
-                                BorderBrush="{DynamicResource ButtonForegroundColor}"
-                                BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                CornerRadius="{DynamicResource ButtonCornerRadius}">
-                            <Border Name="BackgroundBorder"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{DynamicResource ButtonBackgroundColor}"
-                                BorderThickness="{DynamicResource ButtonBorderThickness}"
-                                CornerRadius="{DynamicResource ButtonCornerRadius}">
-                                <ContentPresenter
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Margin="10,2,10,2"/>
-                            </Border>
+                                CornerRadius="{DynamicResource NavItemCornerRadius}"
+                                Padding="12,0,10,0">
+                            <Grid>
+                                <Border Name="NavIndicator"
+                                        Width="3" Height="18"
+                                        CornerRadius="2"
+                                        HorizontalAlignment="Left"
+                                        Margin="-10,0,0,0"
+                                        Background="{DynamicResource AccentColor}"
+                                        Visibility="Hidden"/>
+                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="15"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Panel.ZIndex" Value="2000"/>
+                                <Setter TargetName="NavItem" Property="Background" Value="{DynamicResource NavItemHoverColor}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="BorderBrush" Value="Pink"/>
-                                <Setter Property="BorderThickness" Value="2"/>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="{DynamicResource CButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="10"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter Property="BorderBrush" Value="Transparent"/>
-                                <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThickness}"/>
+                                <Setter TargetName="NavItem" Property="Background" Value="{DynamicResource NavItemSelectedColor}"/>
+                                <Setter TargetName="NavIndicator" Property="Visibility" Value="Visible"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -1040,67 +1043,62 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/> <!-- Sidebar navigation -->
+            <ColumnDefinition Width="*"/> <!-- Page content -->
         </Grid.ColumnDefinitions>
         <!-- Offline banner -->
-        <Border Name="WPFOfflineBanner" Grid.Row="0" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
+        <Border Name="WPFOfflineBanner" Grid.Row="0" Grid.ColumnSpan="2" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
             <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
-        <Grid Grid.Row="1" Background="{DynamicResource MainBackgroundColor}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/> <!-- Navigation buttons -->
-                <ColumnDefinition Width="*"/> <!-- Search bar and buttons -->
-            </Grid.ColumnDefinitions>
 
-            <!-- Navigation Buttons Panel -->
-            <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="5,5,10,5">
-                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
+        <!-- Sidebar navigation -->
+        <Border Name="WPFSidebar" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0"
+                Width="{DynamicResource SidebarWidth}"
+                Background="{DynamicResource SidebarBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,0,1,0">
+            <StackPanel Name="NavDockPanel" Orientation="Vertical" VerticalAlignment="Top" Background="Transparent" Margin="10,16,10,10">
+                <!-- The logo is inserted in front of the name at startup -->
+                <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="8,0,0,24">
+                    <TextBlock Text="WinTweaks" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0" Background="Transparent"
+                               Foreground="{DynamicResource MainForegroundColor}"/>
                 </StackPanel>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonInstallForegroundColor}" >
-                            <Underline>I</Underline>nstall
-                        </TextBlock>
-                    </ToggleButton.Content>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab1BT" ToolTip="Install apps with winget (Alt+I)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>I</Underline>nstall</TextBlock>
+                    </StackPanel>
                 </ToggleButton>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonTweaksBackgroundColor}" Foreground="{DynamicResource ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonTweaksForegroundColor}">
-                            <Underline>T</Underline>weaks
-                        </TextBlock>
-                    </ToggleButton.Content>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab2BT" ToolTip="Privacy and performance tweaks (Alt+T)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE9E9;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>T</Underline>weaks</TextBlock>
+                    </StackPanel>
                 </ToggleButton>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonConfigBackgroundColor}" Foreground="{DynamicResource ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonConfigForegroundColor}">
-                            <Underline>C</Underline>onfig
-                        </TextBlock>
-                    </ToggleButton.Content>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab3BT" ToolTip="Windows features, repairs and classic panels (Alt+C)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE90F;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>C</Underline>onfig</TextBlock>
+                    </StackPanel>
                 </ToggleButton>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
-                            <Underline>U</Underline>pdates
-                        </TextBlock>
-                    </ToggleButton.Content>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab4BT" ToolTip="Windows Update profiles (Alt+U)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>U</Underline>pdates</TextBlock>
+                    </StackPanel>
                 </ToggleButton>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
-                            <Underline>W</Underline>in11 Creator
-                        </TextBlock>
-                    </ToggleButton.Content>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab5BT" ToolTip="Build a customized Windows 11 ISO (Alt+W)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE958;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>W</Underline>in11 Creator</TextBlock>
+                    </StackPanel>
                 </ToggleButton>
             </StackPanel>
+        </Border>
 
+        <Grid Grid.Row="1" Grid.Column="1" Background="{DynamicResource MainBackgroundColor}">
             <!-- Search Bar and Action Buttons -->
-            <Grid Name="GridBesideNavDockPanel" Grid.Column="1" Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Height="Auto">
+            <Grid Name="GridBesideNavDockPanel" Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Height="Auto" Margin="0,6,0,4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/> <!-- Search bar area - priority space -->
                     <ColumnDefinition Width="Auto"/><!-- Buttons area -->
@@ -1150,7 +1148,7 @@
                     Margin="0,0,2,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="N/A"
-                    ToolTip="Change the WinUtil UI Theme"
+                    ToolTip="Change the WinTweaks UI Theme"
                     AutomationProperties.Name="Theme"
                 />
                     <Popup Name="ThemePopup"
@@ -1289,7 +1287,6 @@
                             <Separator/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Documentation" Name="DocumentationMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
-                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -1355,10 +1352,11 @@
             </Grid>
         </Grid>
 
-        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="2" Grid.Column="0" Padding="-1">
+        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="2" Grid.Column="1" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -1373,20 +1371,46 @@
                                    VerticalAlignment="Center"
                                    Margin="10,0,10,0"
                                    ToolTip="Filter by category. Ctrl click to select more than one."/>
-                        <ToggleButton Name="WPFSearchChipAll"             Content="All"               Style="{StaticResource FilterChipToggleStyle}" IsChecked="True"/>
-                        <ToggleButton Name="WPFSearchChipBrowsers"        Content="Browsers"          Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipCommunications"  Content="Communications"    Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipDevelopment"     Content="Development"       Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipDocument"        Content="Document"          Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipGames"           Content="Games"             Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipMicrosoftTools"  Content="Microsoft Tools"   Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipMultimediaTools" Content="Multimedia Tools"  Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipProTools"        Content="Pro Tools"         Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipSelfhostedTools" Content="Selfhosted Tools"  Style="{StaticResource FilterChipToggleStyle}"/>
-                        <ToggleButton Name="WPFSearchChipUtilities"       Content="Utilities"         Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipAll"              Content="All"                     Style="{StaticResource FilterChipToggleStyle}" IsChecked="True"/>
+                        <ToggleButton Name="WPFSearchChipBrowsers"         Content="Browsers"                Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipCommunications"   Content="Communications"          Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipDevelopment"      Content="Development"             Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipGames"            Content="Games"                   Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipMultimediaTools"  Content="Multimedia Tools"        Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipUtilities"        Content="Utilities"               Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipDiskUSB"          Content="Disk &amp; USB"          Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipHardwareDrivers"  Content="Hardware &amp; Drivers"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipSecurityPrivacy"  Content="Security &amp; Privacy"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipOfficeDocuments"  Content="Office &amp; Documents"  Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipCloudBackup"      Content="Cloud &amp; Backup"      Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipRuntimes"         Content="Runtimes"                Style="{StaticResource FilterChipToggleStyle}"/>
+                        <ToggleButton Name="WPFSearchChipCustom"           Content="Custom"                  Style="{StaticResource FilterChipToggleStyle}"/>
                     </WrapPanel>
 
-                    <Grid Grid.Row="1" Margin="{DynamicResource TabContentMargin}">
+                    <!-- Custom apps: any winget package, kept for the next session -->
+                    <Grid Grid.Row="1" Margin="15,0,10,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="260"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Add any winget app:" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBox Grid.Column="1" Name="WPFCustomAppId"
+                                 Height="{DynamicResource SearchBarHeight}"
+                                 VerticalContentAlignment="Center" Padding="4,0"
+                                 Foreground="{DynamicResource MainForegroundColor}" Background="{DynamicResource MainBackgroundColor}"
+                                 BorderBrush="{DynamicResource BorderColor}" BorderThickness="1"
+                                 ToolTip="The winget package ID, for example Mozilla.Firefox. Press Enter to add it."
+                                 AutomationProperties.Name="Winget ID to add"/>
+                        <Button Grid.Column="2" Name="WPFAddCustomApp" Content="Add to list" Width="110" Margin="6,0,0,0"/>
+                        <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="12,0,0,0" TextWrapping="Wrap" FontStyle="Italic"
+                                   Foreground="{DynamicResource InfoIconColor}"
+                                   Text="Custom apps appear under Custom and are saved for next time. Right-click one to remove it."/>
+                    </Grid>
+
+                    <Grid Grid.Row="2" Margin="{DynamicResource TabContentMargin}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -1434,9 +1458,9 @@
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel Background="{DynamicResource MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBlock Padding="10">
-                                        Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                        <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                                    <TextBlock Padding="10" TextWrapping="Wrap">
+                                        Hover the info icon next to a tweak to see what it changes. The dot shows its risk: green low, orange medium, red high.
+                                        <LineBreak/>When you press Run Tweaks you are asked once whether to create a System Restore point first. If you are unsure, stick to the Standard selection.
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -1470,14 +1494,14 @@
                                        FontSize="24"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource MainForegroundColor}"/>
-                            <TextBlock Text="Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinUtil."
+                            <TextBlock Text="Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinTweaks."
                                        Margin="0,6,0,0"
                                        FontSize="13"
                                        TextWrapping="Wrap"
                                        Foreground="{DynamicResource MainForegroundColor}"/>
                         </StackPanel>
 
-                        <UniformGrid Grid.Row="1" Columns="3">
+                        <UniformGrid Grid.Row="1" Columns="2">
                             <Border Style="{StaticResource BorderStyle}"
                                     BorderBrush="{DynamicResource ProgressBarForegroundColor}"
                                     BorderThickness="2"
@@ -1537,10 +1561,10 @@
                                                    Foreground="{DynamicResource MainForegroundColor}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Removes Windows Update policies applied by WinUtil" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Text="- Removes Windows Update policies applied by WinTweaks" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
                                         <TextBlock Text="- Restores update service startup settings" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
                                         <TextBlock Text="- Re-enables update scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Use this to undo the Recommended or Disable profile."
+                                        <TextBlock Text="Use this to undo the Recommended profile, or update settings another tool disabled."
                                                    FontSize="11"
                                                    FontStyle="Italic"
                                                    TextWrapping="Wrap"
@@ -1554,48 +1578,10 @@
                                             Padding="10"/>
                                 </Grid>
                             </Border>
-
-                            <Border Style="{StaticResource BorderStyle}" Padding="16" MinHeight="300">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Disable Updates"
-                                                   FontSize="20"
-                                                   FontWeight="Bold"
-                                                   Foreground="Red"/>
-                                        <TextBlock Text="Advanced use only"
-                                                   Margin="0,4,0,0"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="Red"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Disables automatic update policy" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Stops update services and scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Clears downloaded update files" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Security updates will not be installed while this profile is active."
-                                                   FontSize="11"
-                                                   FontStyle="Italic"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="Red"/>
-                                    </StackPanel>
-                                    <Button Name="WPFUpdatesdisable"
-                                            Grid.Row="2"
-                                            Content="Disable Updates"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Foreground="Red"
-                                            Margin="0,16,0,0"
-                                            Padding="10"/>
-                                </Grid>
-                            </Border>
                         </UniformGrid>
 
                         <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="8,14,8,8" Padding="12">
-                            <TextBlock Text="Changes apply system-wide. Restart Windows after switching profiles. Use Restore Defaults to undo WinUtil update policies."
+                            <TextBlock Text="Changes apply system-wide. Restart Windows after switching profiles. Applying Recommended offers to create a restore point first."
                                        TextWrapping="Wrap"
                                        HorizontalAlignment="Center"
                                        Foreground="{DynamicResource MainForegroundColor}"/>
@@ -2248,7 +2234,7 @@
         </TabControl>
 
         <!-- Window-level progress indicator - visible regardless of active tab -->
-        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
+        <Border Name="WPFTweaksProgressBar" Grid.Row="3" Grid.Column="1" Background="{DynamicResource MainBackgroundColor}" Visibility="Collapsed" Padding="10,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

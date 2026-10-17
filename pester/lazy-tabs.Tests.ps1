@@ -175,12 +175,12 @@ Describe "Startup lazy tab wiring" {
         $uiScript | Should -Match '\$alreadyWired'
     }
 
-    It "binds generated documentation links when lazy panels are rendered" {
+    It "binds the info icon tooltip when lazy panels are rendered" {
         $rendererScript = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFUIElements.ps1") -Raw
         $mainScript = Get-Content -Path (Join-Path $script:repoRoot "scripts\main.ps1") -Raw
 
-        $rendererScript | Should -Match '(?s)if \(\$entryInfo\.Link\).*\$textBlock\.Add_MouseUp\(\{.*Start-Process \$Sender\.ToolTip -ErrorAction Stop'
-        $mainScript | Should -Not -Match '\.Name\.EndsWith\("Link"\)'
+        $rendererScript | Should -Match '(?s)if \(-not \[string\]::IsNullOrWhiteSpace\(\$entryInfo\.Description\)\).*\$infoIcon\.ToolTip = New-WinUtilInfoToolTip'
+        $mainScript | Should -Not -Match '\.Name\.EndsWith\("Info"\)'
     }
 
     It "checks for an existing outer ScrollViewer before nesting an inner ScrollViewer" {

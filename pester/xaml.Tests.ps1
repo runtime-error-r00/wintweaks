@@ -175,13 +175,18 @@ Describe "XAML document" {
             "WPFSearchChipBrowsers",
             "WPFSearchChipCommunications",
             "WPFSearchChipDevelopment",
-            "WPFSearchChipDocument",
             "WPFSearchChipGames",
-            "WPFSearchChipMicrosoftTools",
             "WPFSearchChipMultimediaTools",
-            "WPFSearchChipProTools",
-            "WPFSearchChipSelfhostedTools",
             "WPFSearchChipUtilities",
+            "WPFSearchChipDiskUSB",
+            "WPFSearchChipHardwareDrivers",
+            "WPFSearchChipSecurityPrivacy",
+            "WPFSearchChipOfficeDocuments",
+            "WPFSearchChipCloudBackup",
+            "WPFSearchChipRuntimes",
+            "WPFSearchChipCustom",
+            "WPFCustomAppId",
+            "WPFAddCustomApp",
             "appscategory",
             "appspanel",
             "tweakspanel",
@@ -197,7 +202,6 @@ Describe "XAML document" {
             "WPFUndoall",
             "WPFUpdatesdefault",
             "WPFUpdatessecurity",
-            "WPFUpdatesdisable",
             "WPFDefaultAppxSelection",
             "WPFGetInstalledAppx",
             "WPFSelectAllAppx",
@@ -215,16 +219,16 @@ Describe "XAML document" {
 
 
 
-    It "presents the three Updates profiles with accurate action labels" {
+    It "presents the two Updates profiles with accurate action labels" {
         $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
         $profileGrid = $updatesTab.SelectSingleNode('.//*[local-name()="UniformGrid"]')
         $expectedButtons = @{
             WPFUpdatessecurity = "Apply Recommended"
             WPFUpdatesdefault = "Restore Defaults"
-            WPFUpdatesdisable = "Disable Updates"
         }
 
-        $profileGrid.GetAttribute("Columns") | Should -Be "3"
+        $profileGrid.GetAttribute("Columns") | Should -Be "2"
+        $updatesTab.SelectSingleNode('.//*[@Name="WPFUpdatesdisable"]') | Should -BeNullOrEmpty
         foreach ($buttonName in $expectedButtons.Keys) {
             $button = $updatesTab.SelectSingleNode(".//*[local-name()='Button'][@Name='$buttonName']")
             $button.GetAttribute("Content") | Should -Be $expectedButtons[$buttonName]
@@ -299,8 +303,12 @@ Describe "XAML document" {
 
 
 
-    It "centers top bar controls vertically" {
+    It "stacks the sidebar navigation from the top and centers top bar controls vertically" {
         $navPanel = $script:xaml.SelectSingleNode('//*[local-name()="StackPanel"][@Name="NavDockPanel"]')
+        $navPanel.GetAttribute("Orientation") | Should -Be "Vertical"
+        $navPanel.GetAttribute("VerticalAlignment") | Should -Be "Top"
+        $navPanel.ParentNode.GetAttribute("Name") | Should -Be "WPFSidebar"
+
         $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
         $actionPanel = $minimizeButton.ParentNode
         $topBarButtonNames = @(
@@ -312,7 +320,6 @@ Describe "XAML document" {
             "WPFCloseButton"
         )
 
-        $navPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
         $actionPanel.GetAttribute("VerticalAlignment") | Should -Be "Center"
 
         foreach ($buttonName in $topBarButtonNames) {
@@ -459,6 +466,7 @@ Describe "XAML and sync wiring" {
             "selectedAppsPopup",
             "appPopup",
             "appPopupSelectedApp",
+            "appPopupRemoveButton",
             "ItemsControl",
             "ImportInProgress",
             "ScriptsInstallPrograms",

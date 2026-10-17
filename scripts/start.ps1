@@ -1,8 +1,8 @@
 <#
 .NOTES
-    Author         : Chris Titus @christitustech
+    Project        : WinTweaks - https://github.com/runtime-error-r00/wintweaks
+    Based on       : WinUtil by Chris Titus @christitustech (https://github.com/ChrisTitusTech/winutil)
     Runspace Author: @DeveloperDurp
-    GitHub         : https://github.com/ChrisTitusTech
     Version        : #{replaceme}
 #>
 
@@ -134,7 +134,7 @@ if ($Offline) {
 }
 
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
-    Write-Host "WinUtil is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
+    Write-Host "WinTweaks is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
     $global:LASTEXITCODE = 1
     if ($env:WINUTIL_HEADLESS_CHILD -eq "1" -or $script:WinUtilIsFileProcess) { exit 1 }
     return 1
@@ -169,7 +169,7 @@ if (`$launch.Headless) { `$env:WINUTIL_HEADLESS_CHILD = '1' }
 if (`$launch.ScriptPath) {
     & `$launch.ScriptPath @invokeParameters
 } else {
-    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1'))
+    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1'))
     & `$remoteScript @invokeParameters
 }
 "@
@@ -178,7 +178,7 @@ if (`$launch.ScriptPath) {
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
+    Write-Output "WinTweaks needs to be run as Administrator. Attempting to relaunch."
     $elevationParameters = @{}
     foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
         $elevationParameters[$parameter.Key] = if ($parameter.Value -is [switch]) {
@@ -263,5 +263,5 @@ $sync.logPath = "$logdir\winutil_$dateTime.log"
 $sync.transcriptPath = $sync.logPath
 Start-Transcript -Path $sync.transcriptPath -Append -NoClobber | Out-Null
 
-$Host.UI.RawUI.WindowTitle = "WinUtil"
+$Host.UI.RawUI.WindowTitle = "WinTweaks"
 Clear-Host

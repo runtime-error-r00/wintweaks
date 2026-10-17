@@ -35,6 +35,7 @@ function Invoke-WPFUIElements {
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
     $ToggleButtonStyle = $window.FindResource("ToggleButtonStyle")
+    $InfoIconStyle = $window.FindResource("InfoIconStyle")
 
     if (!$borderstyle -or !$HoverTextBlockStyle -or !$ColorfulToggleSwitchStyle) {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
@@ -78,6 +79,7 @@ function Invoke-WPFUIElements {
             Panel       = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
             Link        = $entryInfo.link
             Description = $entryInfo.description
+            Risk        = $entryInfo.risk
             Type        = $entryInfo.type
             ComboItems  = $entryInfo.ComboItems
             ComboDescriptions = $entryInfo.ComboDescriptions
@@ -519,43 +521,37 @@ function Invoke-WPFUIElements {
                         }
                         $horizontalStackPanel.Children.Add($checkBox) | Out-Null
 
-                        if ($entryInfo.Link) {
-                            $textBlock = New-Object Windows.Controls.TextBlock
-                            $textBlock.Name = $checkBox.Name + "Link"
-                            $textBlock.Text = "(?)"
-                            $textBlock.ToolTip = $entryInfo.Link
-                            $textBlock.Style = $HoverTextBlockStyle
-                            $textBlock.UseLayoutRounding = $true
+                        # Risk dot: green, orange or red, matching the risk line in the tooltip
+                        $riskKey = if ($entryInfo.Risk) { ([string]$entryInfo.Risk).ToLowerInvariant() } else { $null }
+                        $riskResources = @{ low = "RiskLowColor"; medium = "RiskMediumColor"; high = "RiskHighColor" }
+                        if ($riskKey -and $riskResources.ContainsKey($riskKey)) {
+                            $riskDot = New-Object Windows.Controls.TextBlock
+                            $riskDot.Text = [string][char]0x25CF
+                            $riskDot.VerticalAlignment = "Center"
+                            $riskDot.Margin = "8,0,0,0"
+                            $riskDot.UseLayoutRounding = $true
+                            $riskDot.Background = [Windows.Media.Brushes]::Transparent
+                            $riskDot.SetResourceReference([Windows.Controls.TextBlock]::ForegroundProperty, $riskResources[$riskKey])
+                            $riskDot.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
+                            [System.Windows.Automation.AutomationProperties]::SetName($riskDot, "Risk: $riskKey")
+                            $horizontalStackPanel.Children.Add($riskDot) | Out-Null
+                        }
 
-                            $textBlock.VerticalAlignment = "Center"
-                            $textBlock.SetResourceReference([Windows.Controls.Control]::FontSizeProperty, "FontSize")
-                            $textBlock.Tag = $checkBox
-
-                            $textBlock.Add_MouseUp({
-                                [System.Object]$Sender = $args[0]
-                                Start-Process $Sender.ToolTip -ErrorAction Stop
-                            })
-
-                            $updateLinkMargin = {
-                                [System.Object]$Sender = $args[0]
-                                $linkedCheckBox = $Sender.Tag
-                                $MarginTopBase = if ($linkedCheckBox) { $linkedCheckBox.Margin.Top } else { 0 }
-                                $Sender.Margin = New-Object Windows.Thickness(
-                                    [math]::Round($Sender.FontSize * 0.5),
-                                    ($MarginTopBase - [math]::Round($Sender.FontSize / 2)),
-                                    0, 0
-                                )
-                            }
-                            $textBlock.Add_Loaded($updateLinkMargin)
-                            $fontSizeDescriptor = [System.ComponentModel.DependencyPropertyDescriptor]::FromProperty(
-                                [Windows.Controls.Control]::FontSizeProperty,
-                                [Windows.Controls.TextBlock]
-                            )
-                            $fontSizeDescriptor.AddValueChanged($textBlock, $updateLinkMargin)
-
-                            $horizontalStackPanel.Children.Add($textBlock) | Out-Null
-
-                            $sync[$textBlock.Name] = $textBlock
+                        # Info icon: hovering it explains what the entry does, in plain language
+                        if (-not [string]::IsNullOrWhiteSpace($entryInfo.Description)) {
+                            $infoIcon = New-Object Windows.Controls.TextBlock
+                            $infoIcon.Name = $checkBox.Name + "Info"
+                            $infoIcon.Text = [string][char]0xE946
+                            $infoIcon.Style = $InfoIconStyle
+                            $infoIcon.VerticalAlignment = "Center"
+                            $infoIcon.Margin = "6,0,0,0"
+                            $infoIcon.UseLayoutRounding = $true
+                            $infoIcon.ToolTip = New-WinUtilInfoToolTip -Title $entryInfo.Content -Description $entryInfo.Description -Risk $entryInfo.Risk
+                            [System.Windows.Controls.ToolTipService]::SetInitialShowDelay($infoIcon, 100)
+                            [System.Windows.Controls.ToolTipService]::SetShowDuration($infoIcon, 60000)
+                            [System.Windows.Automation.AutomationProperties]::SetName($infoIcon, "About $($entryInfo.Content)")
+                            [System.Windows.Automation.AutomationProperties]::SetHelpText($infoIcon, [string]$entryInfo.Description)
+                            $horizontalStackPanel.Children.Add($infoIcon) | Out-Null
                         }
 
                         $stackPanelContainer.Children.Add($horizontalStackPanel) | Out-Null
