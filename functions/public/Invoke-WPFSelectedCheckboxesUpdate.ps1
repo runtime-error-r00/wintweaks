@@ -3,7 +3,6 @@ function Invoke-WPFSelectedCheckboxesUpdate ($type, $checkboxName) {
         '^WPFInstall' { 'selectedApps' }
         '^WPFTweaks'  { 'selectedTweaks' }
         '^WPFToggle'  { 'selectedToggles' }
-        '^WPFFeature' { 'selectedFeatures' }
         '^WPFAppx'    { 'selectedAppx' }
     }
 

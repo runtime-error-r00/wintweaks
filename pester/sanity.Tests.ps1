@@ -126,12 +126,11 @@ Describe "Compiled WinUtil sanity" {
         Invoke-WindowsPowerShellParser -Path $script:compiledPath
     }
 
-    It "contains embedded configs, XAML, autounattend XML, and runspace bootstrap" {
+    It "contains embedded configs, XAML, and runspace bootstrap" {
         $content = Get-Content -Path $script:compiledPath -Raw
         $requiredSnippets = @(
             ('$sync.configs.applications = @' + "'"),
             ('$inputXML = @' + "'"),
-            ('$WinUtilAutounattendXml = @' + "'"),
             "SessionStateVariableEntry",
             "SessionStateFunctionEntry",
             "[runspacefactory]::CreateRunspacePool",
@@ -179,7 +178,6 @@ Describe "Compiled WinUtil sanity" {
             'function Add-SelectedAppsMenuItem',
             ('$sync.configs.applications = @' + "'"),
             ('$inputXML = @' + "'"),
-            ('$WinUtilAutounattendXml = @' + "'"),
             '$uiShell.AddScript({ Start-WinUtilUserInterface })'
         )
 

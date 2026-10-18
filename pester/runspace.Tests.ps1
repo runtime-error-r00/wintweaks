@@ -16,7 +16,6 @@ BeforeAll {
     function Show-WinUtilMessage {
         param($Message, $Title, $Button, $Icon)
     }
-    . (Join-Path $script:repoRoot "functions\public\Invoke-WPFFeatureInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
 
@@ -251,7 +250,6 @@ Describe "Public runspace callers" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
             ProcessRunning = $false
-            selectedFeatures = [System.Collections.Generic.List[string]]::new()
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
@@ -267,17 +265,6 @@ Describe "Public runspace callers" {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "queues selected feature installation as a job without executing the body" {
-        $script:sync.selectedFeatures.Add("WPFFeaturesSandbox")
-
-        Invoke-WPFFeatureInstall
-
-        Should -Invoke -CommandName Start-WinUtilJob -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "Features" -and
-                $ScriptBlock -is [scriptblock] -and
-                @($Parameters.Features)[0] -eq "WPFFeaturesSandbox"
-        }
-    }
 
     It "queues selected tweak undo as a job without executing the body" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
@@ -318,12 +305,9 @@ Describe "Public runspace callers" {
             (Join-Path $publicRoot "Invoke-WPFUnInstall.ps1"),
             (Join-Path $publicRoot "Invoke-WPFAppxInstall.ps1"),
             (Join-Path $publicRoot "Invoke-WPFAppxRemoval.ps1"),
-            (Join-Path $publicRoot "Invoke-WPFFeatureInstall.ps1"),
             (Join-Path $publicRoot "Invoke-WPFGetInstalled.ps1"),
             (Join-Path $publicRoot "Invoke-WPFtweaksbutton.ps1"),
-            (Join-Path $publicRoot "Invoke-WPFundoall.ps1"),
-            (Join-Path $privateRoot "Invoke-WinUtilISO.ps1"),
-            (Join-Path $privateRoot "Invoke-WinUtilISOUSB.ps1")
+            (Join-Path $publicRoot "Invoke-WPFundoall.ps1")
         )
 
         foreach ($entrypoint in $entrypoints) {

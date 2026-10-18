@@ -31,7 +31,6 @@ BeforeAll {
     function Write-WinUtilErrorRecord { param($ErrorRecord, $Component, $Context) }
     function Invoke-WPFtweaksbutton { }
     function Invoke-WPFToggleSelections { }
-    function Invoke-WPFFeatureInstall { }
     function Invoke-WPFInstall { }
     function Invoke-WPFAppxRemoval { }
 }
@@ -213,7 +212,6 @@ Describe "Invoke-WinUtilAutoRun" {
         $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
         $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
         $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
-        $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
         $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
         $sync.LoggedErrors = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
         $sync.ActiveJob = $null
@@ -370,7 +368,7 @@ Describe "Write-WinUtilAutoRunSummary" {
 Describe "Update-WinUtilSelections" {
     BeforeEach {
         $global:sync = [hashtable]::Synchronized(@{})
-        foreach ($list in @("selectedApps","selectedTweaks","selectedToggles","selectedFeatures","selectedAppx")) {
+        foreach ($list in @("selectedApps","selectedTweaks","selectedToggles","selectedAppx")) {
             $sync.$list = [System.Collections.Generic.List[string]]::new()
         }
         # The selection sorter now checks each key against the real catalogue before taking it,
@@ -379,18 +377,16 @@ Describe "Update-WinUtilSelections" {
             applicationsHashtable = @{ "WPFInstall7zip" = @{} }
             appxHashtable         = @{ "WPFAppxBing" = @{} }
             tweaks                = [pscustomobject]@{ "WPFTweaksDiskCleanup" = @{}; "WPFToggleDarkMode" = @{} }
-            feature               = [pscustomobject]@{ "WPFFeaturesdotnet" = @{} }
         }
         Mock Write-WinUtilLog { }
     }
 
     It "sorts each prefix into its own list" {
-        Update-WinUtilSelections -flatJson @("WPFInstall7zip","WPFTweaksDiskCleanup","WPFToggleDarkMode","WPFFeaturesdotnet","WPFAppxBing")
+        Update-WinUtilSelections -flatJson @("WPFInstall7zip","WPFTweaksDiskCleanup","WPFToggleDarkMode","WPFAppxBing")
 
         $sync.selectedApps | Should -Contain "WPFInstall7zip"
         $sync.selectedTweaks | Should -Contain "WPFTweaksDiskCleanup"
         $sync.selectedToggles | Should -Contain "WPFToggleDarkMode"
-        $sync.selectedFeatures | Should -Contain "WPFFeaturesdotnet"
         $sync.selectedAppx | Should -Contain "WPFAppxBing"
     }
 

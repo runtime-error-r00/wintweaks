@@ -208,11 +208,9 @@ function Start-WinUtilUserInterface {
         if ($_.KeyboardDevice.Modifiers -eq "Alt") {
             $keyEventArgs = $_
             switch ($_.SystemKey) {
-                "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab and suppress Windows Warning Sound
-                "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
-                "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
+                "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab and suppress Windows Warning Sound
+                "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab
                 "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
-                "W" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to Win11ISO tab
             }
         }
         # Handle Ctrl key combinations for specific actions
@@ -293,16 +291,14 @@ function Start-WinUtilUserInterface {
             # Show offline indicator
             Write-Host "Offline mode detected - Install tab disabled." -ForegroundColor Yellow
 
-            # Optionally switch to a different tab if install tab was going to be default
-            Invoke-WPFTab "WPFTab2BT" -Yield  # Switch to Tweaks tab instead
         }
         else {
             # Online - ensure install tab is enabled
             $sync.WPFTab1BT.IsEnabled = $true
             $sync.WPFTab1BT.Opacity = 1.0
             $sync.WPFTab1BT.ToolTip = $null
-            Invoke-WPFTab "WPFTab1BT" -Yield  # Default to install tab
         }
+        Invoke-WPFTab "WPFTab2BT" -Yield  # Tweaks is the first page
 
         $sync["Form"].Focus()
         $sync["Form"].Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Initialize-WinUtilRunspacePool | Out-Null }) | Out-Null
@@ -323,7 +319,7 @@ function Start-WinUtilUserInterface {
         $searchBarTimer.Stop()
         switch ($sync.currentTab) {
             "Install" {
-                Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text -Categories $sync.SelectedAppCategories.ToArray()
+                Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
             }
             "Tweaks" {
                 Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
@@ -347,38 +343,6 @@ function Start-WinUtilUserInterface {
         }
         $searchBarTimer.Start()
     })
-
-    # Category filter chips. The chip carries its category in Tag, so one handler covers all of them.
-    $sync.AppCategoryChips = @(
-        @{ Name = "WPFSearchChipAll";             Category = "" }
-        @{ Name = "WPFSearchChipBrowsers";        Category = "Browsers" }
-        @{ Name = "WPFSearchChipCommunications";  Category = "Communications" }
-        @{ Name = "WPFSearchChipDevelopment";     Category = "Development" }
-        @{ Name = "WPFSearchChipGames";           Category = "Games" }
-        @{ Name = "WPFSearchChipMultimediaTools"; Category = "Multimedia Tools" }
-        @{ Name = "WPFSearchChipUtilities";       Category = "Utilities" }
-        @{ Name = "WPFSearchChipDiskUSB";         Category = "Disk & USB" }
-        @{ Name = "WPFSearchChipHardwareDrivers"; Category = "Hardware & Drivers" }
-        @{ Name = "WPFSearchChipSecurityPrivacy"; Category = "Security & Privacy" }
-        @{ Name = "WPFSearchChipOfficeDocuments"; Category = "Office & Documents" }
-        @{ Name = "WPFSearchChipCloudBackup";     Category = "Cloud & Backup" }
-        @{ Name = "WPFSearchChipRuntimes";        Category = "Runtimes" }
-        @{ Name = "WPFSearchChipCustom";          Category = "Custom" }
-    )
-    $sync.SelectedAppCategories = [System.Collections.Generic.List[string]]::new()
-
-    # Enter in the custom app box adds it, like the button beside it
-    $sync["WPFCustomAppId"].Add_KeyDown({
-        if ($_.Key -eq [System.Windows.Input.Key]::Return) {
-            Invoke-WPFButton "WPFAddCustomApp"
-            $_.Handled = $true
-        }
-    })
-
-    foreach ($appCategoryChip in $sync.AppCategoryChips) {
-        $sync[$appCategoryChip.Name].Tag = $appCategoryChip.Category
-        $sync[$appCategoryChip.Name].Add_Click({ Invoke-WinUtilAppCategoryChip -Chip $this })
-    }
 
     $sync["Form"].Add_Loaded({
         param($e)
@@ -465,53 +429,6 @@ Runspace  : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a hr
         $scaleFactor = $sync.FontScalingSlider.Value
         Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
         Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
-    })
-
-    # Win11ISO Tab button handlers
-    $sync["WPFWin11ISOBrowseButton"].Add_Click({
-        Invoke-WinUtilISOBrowse
-    })
-
-    $sync["WPFWin11ISODownloadLink"].Add_Click({
-        Start-Process "https://www.microsoft.com/software-download/windows11"
-    })
-
-    $sync["WPFWin11ISOMountButton"].Add_Click({
-        Invoke-WinUtilISOMountAndVerify
-    })
-
-    $sync["WPFWin11ISOModifyButton"].Add_Click({
-        Invoke-WinUtilISOModify
-    })
-
-    $sync["WPFWin11ISOChooseISOButton"].Add_Click({
-        $sync["WPFWin11ISOOptionUSB"].Visibility = "Collapsed"
-        Invoke-WinUtilISOExport
-    })
-
-    $sync["WPFWin11ISOChooseUSBButton"].Add_Click({
-        $sync["WPFWin11ISOOptionUSB"].Visibility = "Visible"
-        Invoke-WinUtilISORefreshUSBDrives
-    })
-
-    $sync["WPFWin11ISORefreshUSBButton"].Add_Click({
-        Invoke-WinUtilISORefreshUSBDrives
-    })
-
-    $sync["WPFWin11ISOWriteUSBButton"].Add_Click({
-        Invoke-WinUtilISOWriteUSB
-    })
-
-    $sync["WPFWin11ISOCleanResetButton"].Add_Click({
-        Invoke-WinUtilISOCleanAndReset
-    })
-
-    $sync["WPFWin11ISOBackButton"].Add_Click({
-        $sync["WPFWin11ISOSelectSection"].IsSelected = $true
-    })
-
-    $sync["WPFWin11ISOForwardButton"].Add_Click({
-        $sync["WPFWin11ISOModifySection"].IsSelected = $true
     })
 
     $buildClock.Stop()

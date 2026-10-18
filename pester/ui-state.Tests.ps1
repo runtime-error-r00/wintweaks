@@ -145,7 +145,6 @@ namespace System.Windows.Controls
             selectedApps = [System.Collections.Generic.List[string]]::new()
             selectedTweaks = [System.Collections.Generic.List[string]]::new()
             selectedToggles = [System.Collections.Generic.List[string]]::new()
-            selectedFeatures = [System.Collections.Generic.List[string]]::new()
             selectedAppx = [System.Collections.Generic.List[string]]::new()
             configs = @{
                 applicationsHashtable = @{
@@ -159,9 +158,6 @@ namespace System.Windows.Controls
                 tweaks = [pscustomobject]@{
                     WPFTweaksTelemetry = [pscustomobject]@{}
                     WPFToggleDarkMode = [pscustomobject]@{}
-                }
-                feature = [pscustomobject]@{
-                    WPFFeatureSandbox = [pscustomobject]@{}
                 }
             }
             WPFselectedAppsButton = [pscustomobject]@{
@@ -200,14 +196,12 @@ Describe "Update-WinUtilSelections" {
             "WPFInstallGit",
             "WPFTweaksTelemetry",
             "WPFToggleDarkMode",
-            "WPFFeatureSandbox",
             "WPFAppxExample"
         )
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
     }
 
@@ -217,12 +211,12 @@ Describe "Update-WinUtilSelections" {
 
         Update-WinUtilSelections -flatJson @(
             "WPFInstallGit",
-            "WPFFeatureSandbox"
+            "WPFToggleDarkMode"
         ) -Replace
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @()
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
     }
 
     It "preserves existing selections when an imported key is unsupported" {
@@ -238,7 +232,6 @@ Describe "Update-WinUtilSelections" {
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
-        @($script:sync.selectedFeatures) | Should -Be @()
     }
 
     It "preserves existing selections when an imported key is not in the current catalog" {
@@ -253,7 +246,6 @@ Describe "Update-WinUtilSelections" {
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
         @($script:sync.selectedTweaks) | Should -Be @()
-        @($script:sync.selectedFeatures) | Should -Be @()
     }
 }
 
@@ -266,7 +258,6 @@ Describe "Reset-WPFCheckBoxes over a changing sync" {
         $sync.selectedApps = [System.Collections.Generic.List[string]]::new()
         $sync.selectedApps.Add("WPFInstallgrower")
         $sync.selectedTweaks = [System.Collections.Generic.List[string]]::new()
-        $sync.selectedFeatures = [System.Collections.Generic.List[string]]::new()
         $sync.selectedAppx = [System.Collections.Generic.List[string]]::new()
         $sync.selectedToggles = [System.Collections.Generic.List[string]]::new()
 
@@ -304,14 +295,14 @@ Describe "Invoke-WPFImpex import selection state" {
         $configPath = Join-Path $TestDrive "valid-config.json"
         @(
             "WPFInstallGit",
-            "WPFFeatureSandbox"
+            "WPFToggleDarkMode"
         ) | ConvertTo-Json | Set-Content -LiteralPath $configPath
 
         Invoke-WPFImpex -type "import" -Config $configPath
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @()
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
+        @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
             $doToggles -eq $true
         }
@@ -325,7 +316,6 @@ Describe "Invoke-WPFImpex import selection state" {
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly -ParameterFilter {
             $doToggles -eq $true
         }
@@ -404,7 +394,6 @@ Describe "Invoke-WPFImpex import selection state" {
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         Should -Invoke -CommandName Write-Error -Times 0 -Exactly
     }
 
@@ -421,7 +410,6 @@ Describe "Invoke-WPFImpex import selection state" {
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallExisting")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksExisting")
-        @($script:sync.selectedFeatures) | Should -Be @()
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 0 -Exactly
         Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
             $Message -like "An error occurred while importing: *Unknown selection key 'WPFInstallUnknown'.*"
@@ -444,13 +432,11 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName "WPFInstallGit"
         Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName "WPFTweaksTelemetry"
         Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName "WPFToggleDarkMode"
-        Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName "WPFFeatureSandbox"
         Invoke-WPFSelectedCheckboxesUpdate -type "Add" -checkboxName "WPFAppxExample"
 
         @($script:sync.selectedApps) | Should -Be @("WPFInstallGit")
         @($script:sync.selectedTweaks) | Should -Be @("WPFTweaksTelemetry")
         @($script:sync.selectedToggles) | Should -Be @("WPFToggleDarkMode")
-        @($script:sync.selectedFeatures) | Should -Be @("WPFFeatureSandbox")
         @($script:sync.selectedAppx) | Should -Be @("WPFAppxExample")
         $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 1"
         $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 1
@@ -461,19 +447,16 @@ Describe "Invoke-WPFSelectedCheckboxesUpdate" {
         $script:sync.selectedApps.Add("WPFInstallGit")
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         $script:sync.selectedToggles.Add("WPFToggleDarkMode")
-        $script:sync.selectedFeatures.Add("WPFFeatureSandbox")
         $script:sync.selectedAppx.Add("WPFAppxExample")
 
         Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName "WPFInstallGit"
         Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName "WPFTweaksTelemetry"
         Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName "WPFToggleDarkMode"
-        Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName "WPFFeatureSandbox"
         Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName "WPFAppxExample"
 
         $script:sync.selectedApps.Count | Should -Be 0
         $script:sync.selectedTweaks.Count | Should -Be 0
         $script:sync.selectedToggles.Count | Should -Be 0
-        $script:sync.selectedFeatures.Count | Should -Be 0
         $script:sync.selectedAppx.Count | Should -Be 0
         $script:sync.WPFselectedAppsButton.Content | Should -Be "Selected Apps: 0"
         $script:sync.selectedAppsstackPanel.Children.Count | Should -Be 0

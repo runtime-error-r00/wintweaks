@@ -68,7 +68,7 @@ BeforeAll {
 
     function script:Get-WinUtilGeneratedControlNames {
         $names = New-Object System.Collections.Generic.List[string]
-        foreach ($configName in @("appnavigation", "tweaks", "feature", "appx")) {
+        foreach ($configName in @("appnavigation", "tweaks", "appx")) {
             $config = Get-WinUtilConfigObject -Name $configName
             foreach ($entry in $config.PSObject.Properties.Name) {
                 $names.Add($entry)
@@ -158,39 +158,17 @@ Describe "XAML document" {
             "WPFTabNav",
             "WPFTab1",
             "WPFTab2",
-            "WPFTab3",
             "WPFTab4",
-            "WPFTab5",
             "WPFTab6",
             "WPFTab1BT",
             "WPFTab2BT",
-            "WPFTab3BT",
             "WPFTab4BT",
-            "WPFTab5BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
-            "WPFSearchChips",
-            "WPFSearchChipAll",
-            "WPFSearchChipBrowsers",
-            "WPFSearchChipCommunications",
-            "WPFSearchChipDevelopment",
-            "WPFSearchChipGames",
-            "WPFSearchChipMultimediaTools",
-            "WPFSearchChipUtilities",
-            "WPFSearchChipDiskUSB",
-            "WPFSearchChipHardwareDrivers",
-            "WPFSearchChipSecurityPrivacy",
-            "WPFSearchChipOfficeDocuments",
-            "WPFSearchChipCloudBackup",
-            "WPFSearchChipRuntimes",
-            "WPFSearchChipCustom",
-            "WPFCustomAppId",
-            "WPFAddCustomApp",
             "appscategory",
             "appspanel",
             "tweakspanel",
-            "featurespanel",
             "appxpanel",
             "WPFstandard",
             "WPFminimal",
@@ -236,57 +214,13 @@ Describe "XAML document" {
         $updatesTab.SelectSingleNode('.//*[@Name="updatespanel"]') | Should -BeNullOrEmpty
     }
 
-    It "contains Win11 Creator controls used by the ISO workflow" {
-        $xamlNames = @(Get-WinUtilXamlRuntimeNamedControls | ForEach-Object { $_.Name })
-        $requiredControls = @(
-            "Win11ISOPanel",
-            "WPFWin11ISOSelectSection",
-            "WPFWin11ISOPath",
-            "WPFWin11ISOBrowseButton",
-            "WPFWin11ISOFileInfo",
-            "WPFWin11ISODownloadLink",
-            "WPFWin11ISOSteps",
-            "WPFWin11ISOBackButton",
-            "WPFWin11ISOForwardButton",
-            "WPFWin11ISOWorkingSection",
-            "WPFWin11ISOWorkingLabel",
-            "WPFWin11ISOWorkingSpinner",
-            "WPFWin11ISODonePanel",
-            "WPFWin11ISODoneLabel",
-            "WPFWin11ISOMountButton",
-            "WPFWin11ISOInjectDrivers",
-            "WPFWin11ISOVerifyResultPanel",
-            "WPFWin11ISOMountDriveLetter",
-            "WPFWin11ISOImageFile",
-            "WPFWin11ISOEditionComboBox",
-            "WPFWin11ISOModifySection",
-            "WPFWin11ISOModifyButton",
-            "WPFWin11ISOOutputSection",
-            "WPFWin11ISOCleanResetButton",
-            "WPFWin11ISOChooseISOButton",
-            "WPFWin11ISOChooseUSBButton",
-            "WPFWin11ISOOptionUSB",
-            "WPFWin11ISOUSBDriveComboBox",
-            "WPFWin11ISORefreshUSBButton",
-            "WPFWin11ISOWriteUSBButton",
-            "WPFWin11ISOStatusLog"
-        )
-
-        $missingControls = @($requiredControls | Where-Object { -not (Test-WinUtilNameInSet -Name $_ -Set $xamlNames) })
-        if ($missingControls.Count -gt 0) {
-            throw ($missingControls -join "`n")
-        }
-    }
-
     It "defines core tabs in the expected order" {
         $tabItems = @($script:xaml.SelectNodes('//*[local-name()="TabControl"][@Name="WPFTabNav"]/*[local-name()="TabItem"]'))
         $actualTabs = @($tabItems | ForEach-Object { "$($_.GetAttribute("Name")):$($_.GetAttribute("Header"))" })
         $expectedTabs = @(
             "WPFTab1:Install",
             "WPFTab2:Tweaks",
-            "WPFTab3:Config",
             "WPFTab4:Updates",
-            "WPFTab5:Win11ISO",
             "WPFTab6:AppX"
         )
 
@@ -347,7 +281,8 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 5
+        $navButtons.Count | Should -Be 3
+        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab1BT", "WPFTab4BT")
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }
@@ -459,14 +394,12 @@ Describe "XAML and sync wiring" {
             "selectedApps",
             "selectedTweaks",
             "selectedToggles",
-            "selectedFeatures",
             "currentTab",
             "selectedAppsStackPanel",
             "selectedAppsstackPanel",
             "selectedAppsPopup",
             "appPopup",
             "appPopupSelectedApp",
-            "appPopupRemoveButton",
             "ItemsControl",
             "ImportInProgress",
             "ScriptsInstallPrograms",
@@ -478,22 +411,12 @@ Describe "XAML and sync wiring" {
             "checkmarkrender",
             "warningrender",
             "InitializedTabs",
-            "AppCategoryChips",
-            "SelectedAppCategories",
             "AppCategoryAutoExpanded",
             "RenderedAssetCache",
             "ToggleStatusCache",
             "InstallAppRenderQueue",
             "InstallAppEntriesRendered",
-            "FontScaleFactor",
-            "Win11ISOImageInfo",
-            "Win11ISODriveLetter",
-            "Win11ISOWimPath",
-            "Win11ISOImagePath",
-            "Win11ISOWorkDir",
-            "Win11ISOContentsDir",
-            "Win11ISOExistingWorkRetryPending",
-            "Win11ISOUSBDisks"
+            "FontScaleFactor"
         )
         $allowedNames = @($xamlNames + $generatedNames + $dynamicStateNames) | Sort-Object -Unique
         $bracketReferences = @(
@@ -519,15 +442,9 @@ Describe "WPF handler wiring" {
     It "calls only defined Invoke-WPF functions" {
         $sourceText = Get-WinUtilSourceText
         $functionNames = @(Get-WinUtilTopLevelFunctionNames)
-        $featureFunctions = @(
-            (Get-WinUtilConfigObject -Name "feature").PSObject.Properties |
-                Where-Object { $_.Value.function -and $_.Value.function -like "Invoke-WPF*" } |
-                ForEach-Object { $_.Value.function }
-        )
         $invokedFunctions = @(
             [regex]::Matches($sourceText, '\b(Invoke-WPF[A-Za-z0-9]+)\b') |
                 ForEach-Object { $_.Groups[1].Value }
-            $featureFunctions
         ) | Sort-Object -Unique
 
         $missingFunctions = @(
@@ -545,21 +462,16 @@ Describe "WPF handler wiring" {
                 Where-Object { $_.Name -like "WPF*" -and $_.Type -in @("Button", "ToggleButton") }
         )
         $buttonSwitchNames = @(Get-WinUtilButtonSwitchNames)
-        $featureNames = @((Get-WinUtilConfigObject -Name "feature").PSObject.Properties.Name)
         $uiScript = Get-Content -Path $script:uiScriptPath -Raw
         $unhandledButtons = New-Object System.Collections.Generic.List[string]
 
         foreach ($button in $buttonControls) {
             $hasSwitchHandler = (Test-WinUtilNameInSet -Name $button.Name -Set $buttonSwitchNames) -or $button.Name -like "WPFTab?BT"
-            $hasFeatureHandler = Test-WinUtilNameInSet -Name $button.Name -Set $featureNames
             $escapedName = [regex]::Escape($button.Name)
             $explicitHandlerPattern = '\$sync\s*(?:\[\s*["'']' + $escapedName + '["'']\s*\]|\.' + $escapedName + ')\.Add_Click'
             $hasExplicitHandler = $uiScript -imatch $explicitHandlerPattern
 
-            # The category chips share one handler, wired from the list that names them
-            $hasChipHandler = $uiScript -imatch ('@\{\s*Name\s*=\s*"' + $escapedName + '"')
-
-            if (-not ($hasSwitchHandler -or $hasFeatureHandler -or $hasExplicitHandler -or $hasChipHandler)) {
+            if (-not ($hasSwitchHandler -or $hasExplicitHandler)) {
                 $unhandledButtons.Add($button.Name)
             }
         }

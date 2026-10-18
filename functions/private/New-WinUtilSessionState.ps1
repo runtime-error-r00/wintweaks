@@ -23,8 +23,7 @@ function New-WinUtilSessionState {
     $variables = @(
         @{ Name = "sync"; Value = $sync },
         @{ Name = "PARAM_OFFLINE"; Value = $PARAM_OFFLINE },
-        @{ Name = "inputXML"; Value = $inputXML },
-        @{ Name = "WinUtilAutounattendXml"; Value = $WinUtilAutounattendXml }
+        @{ Name = "inputXML"; Value = $inputXML }
     )
 
     foreach ($variable in $variables) {

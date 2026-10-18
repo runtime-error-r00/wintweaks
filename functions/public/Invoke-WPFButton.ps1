@@ -24,10 +24,7 @@ function Invoke-WPFButton {
         Step-WinUtilJob -Hide
     }
 
-    # Switch-driven buttons that change the system. Anything in feature.json counts too. The
-    # WPFPanel* entries are the exception only when they hand off to a Windows applet, which is
-    # what a missing function means; the two that carry one change the system themselves and
-    # would otherwise run their waits on the interface thread with nothing reporting them.
+    # Switch-driven buttons that change the system.
     #
     # This is a whitelist on purpose: window chrome and popup toggles also reach here, because
     # every Button in $sync gets wired to this function, and they must not become jobs.
@@ -37,13 +34,7 @@ function Invoke-WPFButton {
         "WPFGetInstalledAppx"
     )
 
-    $featureEntry = $sync.configs.feature.$Button
-    # Feature installation owns its selection validation and snapshots the selection before it
-    # starts a job. Wrapping it here would turn its "nothing selected" return into job success.
-    $isConfigWork = $featureEntry -and $Button -ne "WPFFeatureInstall" -and
-        ($Button -notlike "WPFPanel*" -or $featureEntry.function)
-
-    if ($isConfigWork -or $workButtons -contains $Button) {
+    if ($workButtons -contains $Button) {
         # The Recommended update profile replaces system policy, so like the tweaks it offers a
         # restore point once, before the job starts
         $createRestorePoint = $false
@@ -94,11 +85,6 @@ function Get-WinUtilButtonLabel {
     #>
     param([string]$Button)
 
-    $content = $sync.configs.feature.$Button.Content
-    if (-not [string]::IsNullOrWhiteSpace($content)) {
-        return $content
-    }
-
     $control = $sync.$Button
     if ($control -and $control.Content) {
         $text = if ($control.Content -is [string]) { $control.Content } else { $control.Content.Text }
@@ -134,31 +120,6 @@ function Invoke-WPFButtonAction {
         [string]$Button
     )
 
-    # Check if button is defined in feature config with function or InvokeScript
-    if ($sync.configs.feature.$Button) {
-        $buttonConfig = $sync.configs.feature.$Button
-
-        # If button has a function defined, call it
-        if ($buttonConfig.function) {
-            $functionName = $buttonConfig.function
-            if (Get-Command $functionName -ErrorAction SilentlyContinue) {
-                & $functionName
-                return
-            }
-        }
-
-        # If button has InvokeScript defined, execute the scripts
-        if ($buttonConfig.InvokeScript -and $buttonConfig.InvokeScript.Count -gt 0) {
-            foreach ($script in $buttonConfig.InvokeScript) {
-                if (-not [string]::IsNullOrWhiteSpace($script)) {
-                    Invoke-Command -ScriptBlock ([scriptblock]::Create($script)) -ErrorAction Stop
-                }
-            }
-            return
-        }
-    }
-
-    # Fallback to hard-coded switch for buttons not in feature.json
     Switch -Wildcard ($Button) {
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFInstall" {Invoke-WPFInstall}
@@ -172,11 +133,6 @@ function Invoke-WPFButtonAction {
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFSelectNewPCKit" {Invoke-WPFPresets "NewPCKit" -checkboxfilterpattern "WPFInstall*"}
-        "WPFAddCustomApp" {
-            if (Add-WinUtilCustomApp -WingetId $sync.WPFCustomAppId.Text) {
-                $sync.WPFCustomAppId.Text = ""
-            }
-        }
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}

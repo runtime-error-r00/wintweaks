@@ -34,25 +34,6 @@ $catalogCases = @(
         ArrayFields = @{}
     }
     @{
-        Name = "feature.json"
-        Path = Join-Path $repoRoot "config\feature.json"
-        ScalarFields = @{
-            Content = "String"
-            Description = "String"
-            category = "String"
-            panel = "String"
-            Order = "String"
-            link = "String"
-            Type = "String"
-            ButtonWidth = "String"
-            function = "String"
-        }
-        ArrayFields = @{
-            feature = "StringArray"
-            InvokeScript = "StringArray"
-        }
-    }
-    @{
         Name = "tweaks.json"
         Path = Join-Path $repoRoot "config\tweaks.json"
         ScalarFields = @{
@@ -114,17 +95,10 @@ $invalidCatalogCases = @(
         ExpectedError = "PackageId must be a string or null"
     }
     @{
-        Name = "feature.json"
-        Json = '{"Feature":{"feature":"Example-Feature"}}'
-        ScalarFields = $catalogCases[2].ScalarFields
-        ArrayFields = $catalogCases[2].ArrayFields
-        ExpectedError = "feature must be an array or null"
-    }
-    @{
         Name = "tweaks.json"
         Json = '{"Tweak":{"registry":{}}}'
-        ScalarFields = $catalogCases[3].ScalarFields
-        ArrayFields = $catalogCases[3].ArrayFields
+        ScalarFields = $catalogCases[2].ScalarFields
+        ArrayFields = $catalogCases[2].ArrayFields
         ExpectedError = "registry must be an array or null"
     }
 )

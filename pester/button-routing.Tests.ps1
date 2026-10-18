@@ -19,7 +19,6 @@ BeforeAll {
     function Write-WinUtilErrorRecord {
         param($ErrorRecord, $Component, $Context)
     }
-    function Invoke-WPFFeatureInstall { }
     function Invoke-WPFUpdatessecurity { }
 }
 
@@ -27,14 +26,7 @@ Describe "Work button preflight" {
     BeforeEach {
         $script:sync = [Hashtable]::Synchronized(@{
             ActiveJob = $null
-            configs = @{
-                feature = @{
-                    WPFFeatureInstall = [pscustomobject]@{
-                        Content = "Install Features"
-                        function = "Invoke-WPFFeatureInstall"
-                    }
-                }
-            }
+            configs = @{}
             WPFUpdatessecurity = [pscustomobject]@{ Content = "Apply Recommended" }
         })
         $script:capturedJob = $null
@@ -42,7 +34,6 @@ Describe "Work button preflight" {
         Mock Step-WinUtilJob { }
         Mock Write-WinUtilLog { }
         Mock Write-WinUtilErrorRecord { }
-        Mock Invoke-WPFFeatureInstall { }
         Mock Invoke-WPFUpdatessecurity { }
         Mock Request-WinUtilRestorePoint { $true }
         Mock Invoke-WinUtilRestorePointStep { $true }
@@ -60,12 +51,6 @@ Describe "Work button preflight" {
         Remove-Variable -Name capturedJob -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It "lets feature installation validate its selection before starting a job" {
-        Invoke-WPFButton -Button "WPFFeatureInstall"
-
-        Should -Invoke Invoke-WPFFeatureInstall -Times 1 -Exactly
-        Should -Invoke Start-WinUtilJob -Times 0 -Exactly
-    }
 
     It "does not start the recommended update job when the restore point prompt is cancelled" {
         Mock Request-WinUtilRestorePoint { $null }

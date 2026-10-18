@@ -51,10 +51,10 @@ function Invoke-WPFImpex {
             try {
                 $Config = ConfigDialog
                 if ($Config) {
-                    $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedFeatures + $sync.selectedAppx) | ForEach-Object { [string]$_ }
+                    $allConfs = ($sync.selectedApps + $sync.selectedTweaks + $sync.selectedToggles + $sync.selectedAppx) | ForEach-Object { [string]$_ }
                     if (-not $allConfs) {
                         Show-WinUtilMessage -Message (
-                            "No settings are selected to export. Please select at least one app, tweak, toggle, feature, or AppX package before exporting."
+                            "No settings are selected to export. Please select at least one app, tweak, toggle, or AppX package before exporting."
                         ) -Title "Nothing to Export" -Button "OK" -Icon "Warning" | Out-Null
                         return
                     }
@@ -92,7 +92,7 @@ function Invoke-WPFImpex {
                         # so only the selection-key properties are restored.
                         $flattenedJson = @(
                             foreach ($property in $jsonFile.PSObject.Properties) {
-                                if ($property.Name -notmatch '^WPF(?:Install|Tweaks|Toggle|Feature|Appx)') {
+                                if ($property.Name -notmatch '^WPF(?:Install|Tweaks|Toggle|Appx)') {
                                     continue
                                 }
 

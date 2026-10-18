@@ -36,9 +36,6 @@ Get-ChildItem config | ForEach-Object {
 $xaml = Get-Content -Path xaml\inputXML.xaml -Raw
 $script += "`$inputXML = @'`r`n$xaml`r`n'@"
 
-$autounattendXml = Get-Content -Path tools\autounattend.xml -Raw
-$script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
-
 $script += Get-Content -Path scripts\main.ps1 -Raw
 
 Set-Content -Path winutil.ps1 -Value $script

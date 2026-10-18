@@ -273,12 +273,10 @@ Describe "Preset config" {
         $preset = Get-WinUtilConfigObject -Name "preset"
         $applications = Get-WinUtilConfigObject -Name "applications"
         $tweaks = Get-WinUtilConfigObject -Name "tweaks"
-        $feature = Get-WinUtilConfigObject -Name "feature"
         $appx = Get-WinUtilConfigObject -Name "appx"
 
         $validReferences = @(
             $tweaks.PSObject.Properties.Name
-            $feature.PSObject.Properties.Name
             $appx.PSObject.Properties.Name
             $applications.PSObject.Properties.Name | ForEach-Object { "WPFInstall$_" }
             Get-WinUtilButtonSwitchNames
@@ -322,13 +320,9 @@ Describe "App navigation config" {
 
     It "contains renderable entries with valid button and radio groups" {
         $appnavigation = Get-WinUtilConfigObject -Name "appnavigation"
-        $feature = Get-WinUtilConfigObject -Name "feature"
         $requiredFields = @("Content", "Category", "Type", "Order", "Description")
         $allowedTypes = @("Button", "RadioButton", "Note")
-        $supportedButtons = @(
-            Get-WinUtilButtonSwitchNames
-            $feature.PSObject.Properties.Name
-        ) | Sort-Object -Unique
+        $supportedButtons = @(Get-WinUtilButtonSwitchNames)
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
         foreach ($entry in $appnavigation.PSObject.Properties) {
@@ -341,7 +335,7 @@ Describe "App navigation config" {
             }
 
             if ($entry.Value.Type -eq "Button" -and $supportedButtons -notcontains $entry.Name) {
-                $invalidEntries.Add("$($entry.Name) is not handled by Invoke-WPFButton or feature config")
+                $invalidEntries.Add("$($entry.Name) is not handled by Invoke-WPFButton")
             }
 
             if ($entry.Value.Type -eq "RadioButton") {
@@ -388,45 +382,6 @@ Describe "UI-rendered config entries" {
             if ((Test-WinUtilHasProperty -Object $entry.Value -Name "StoreId") -and
                 $entry.Value.StoreId -notmatch '^(?:[A-Z0-9]{12}|XP[A-Z0-9]{12})$') {
                 $invalidEntries.Add("$($entry.Name) has invalid Microsoft Store ID '$($entry.Value.StoreId)'")
-            }
-        }
-
-        if ($invalidEntries.Count -gt 0) {
-            throw ($invalidEntries -join "`n")
-        }
-    }
-
-    It "contains required feature fields and valid configured functions" {
-        $feature = Get-WinUtilConfigObject -Name "feature"
-        $functionNames = Get-WinUtilTopLevelFunctionNames
-        $requiredFields = @("Content", "category", "panel", "link")
-        $invalidEntries = New-Object System.Collections.Generic.List[string]
-
-        foreach ($entry in $feature.PSObject.Properties) {
-            foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName $entry.Name -Entry $entry.Value -RequiredFields $requiredFields)) {
-                $invalidEntries.Add($missingField)
-            }
-
-            if ($entry.Value.Type -and $entry.Value.Type -ne "Button") {
-                $invalidEntries.Add("$($entry.Name) has unsupported Type '$($entry.Value.Type)'")
-            }
-
-            if ($entry.Value.Type -eq "Button") {
-                if (-not $entry.Value.function -and -not $entry.Value.InvokeScript) {
-                    $invalidEntries.Add("$($entry.Name) button missing function or InvokeScript")
-                }
-            } else {
-                if (-not (Test-WinUtilHasNonEmptyProperty -Object $entry.Value -Name "Description")) {
-                    $invalidEntries.Add("$($entry.Name) missing Description")
-                }
-
-                if (-not $entry.Value.feature -and -not $entry.Value.InvokeScript) {
-                    $invalidEntries.Add("$($entry.Name) missing feature or InvokeScript action")
-                }
-            }
-
-            if ($entry.Value.function -and $functionNames -notcontains $entry.Value.function) {
-                $invalidEntries.Add("$($entry.Name) references missing function $($entry.Value.function)")
             }
         }
 

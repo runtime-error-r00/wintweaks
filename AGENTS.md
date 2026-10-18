@@ -94,10 +94,9 @@ This scoping applies to compiled-script behavior only. Repository metadata — `
 
 ## 6. Runtime And Safety Rules
 
-- WinUtil performs system-level Windows changes; treat registry, services, AppX removal, package manager, Windows Update, ISO, and unattended setup changes as high-risk (see SPEC.md's Safety Requirements).
+- WinUtil performs system-level Windows changes; treat registry, services, AppX removal, package manager and Windows Update changes as high-risk (see SPEC.md's Safety Requirements).
 - Prefer existing helper functions for WinGet, Chocolatey, registry, services, progress, and UI updates.
 - Keep tweaks reversible where the schema supports it by including original values or original states.
-- Never modify a user's original ISO in-place; follow existing copy/mount/export patterns.
 - Avoid storing credentials, secrets, or machine-specific paths in repo files.
 - Preserve logging and user feedback patterns for long-running or destructive operations.
 
@@ -182,8 +181,6 @@ When the user corrects an agent approach, add or tighten one concrete rule here 
 - Diagnostic scaffolding does not ship. Measure with it, then delete it.
 - Have each Pester file load the assemblies and dot-source the functions it needs; several passed only because an earlier file in alphabetical order happened to load them.
 - Log install/uninstall package names and package-manager IDs before queuing background runspace work; do not rely on runspace host output for the package identity.
-- For Win11 Creator, start each new ISO modification in a fresh `WinUtil_Win11ISO_*` temp directory; existing-work detection is only for resuming/exporting already modified media.
-- For Win11 Creator driver injection, inject storage controllers (`SCSIAdapter` / `HDC`) into `boot.wim` index 2 with DISM, not `$WinpeDriver$`. Keep `install.wim` on its own per-package `/Add-Driver` retry loop. For each image, add each root package folder with its own `/Add-Driver /Recurse` so a single bad driver cannot fail the rest, and skip any folder whose ancestor is already in the set, since that ancestor's `/Recurse` covers it. Warn per failure and commit only when at least one package was added; when none were, warn and discard rather than throwing, so the run still produces an ISO. The discard in the cleanup block carries both orphaned mounts and that intentional zero-added case; keep it. Do not export editions or run unrelated WIM cleanup, and reject damaged metadata before ISO export. Use `-LiteralPath` for driver export paths, since `%TEMP%` can contain wildcard characters.
 - For Script Analyzer cleanup, fix actionable source warnings first and do not globally suppress accepted convention warnings such as plural names, `ShouldProcess` on UI helpers, `$global:sync`, or compile-time cross-file false positives.
 - Public pull-request diffs may be sent to configured external review services without a separate privacy approval; do not block the review loop on upload authorization for this public repository.
 - Keep install-tab favicon loading overlapped with app-entry rendering; do not replace native WPF loading with a deferred second phase unless visible completion time is proven no slower than `main`.

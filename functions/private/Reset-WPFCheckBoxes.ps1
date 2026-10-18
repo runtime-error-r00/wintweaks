@@ -20,7 +20,7 @@ function Reset-WPFCheckBoxes {
         [Parameter(position=1)]
         [string]$checkboxfilterpattern = "**"
     )
-    $selectedSet = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedApps + $sync.selectedTweaks + $sync.selectedFeatures + $sync.selectedAppx), [StringComparer]::OrdinalIgnoreCase)
+    $selectedSet = [System.Collections.Generic.HashSet[string]]::new([string[]]@($sync.selectedApps + $sync.selectedTweaks + $sync.selectedAppx), [StringComparer]::OrdinalIgnoreCase)
 
     # A synchronized Hashtable protects individual operations, not enumeration. Materialize the
     # snapshot under its lock, then release it before handlers run and mutate $sync.

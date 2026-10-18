@@ -52,8 +52,7 @@ function Start-WinUtilJob {
     }
 
     # A nested job runs inline: the outer already owns the slot and the reporting, so claiming
-    # again would refuse it and skip its work. Feature installs arrive twice, from feature.json
-    # and from Invoke-WPFFeatureInstall.
+    # again would refuse it and skip its work.
     if ($global:WinUtilIsJobWorker) {
         & $ScriptBlock @Parameters
         return $null

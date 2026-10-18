@@ -20,7 +20,6 @@ BeforeAll {
     $script:selectionConfigs = @{
         applicationsHashtable = $applicationsHashtable
         tweaks                 = Get-Content (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
-        feature                = Get-Content (Join-Path $script:repoRoot "config\feature.json") -Raw | ConvertFrom-Json
         appxHashtable          = $appxHashtable
     }
 
@@ -43,7 +42,7 @@ BeforeAll {
     $script:appRenderer = Get-Content $appRendererPath -Raw
 
     # Every entry the renderer draws, with the branch that draws it
-    $script:renderedEntries = foreach ($configName in "appnavigation", "tweaks", "feature", "appx") {
+    $script:renderedEntries = foreach ($configName in "appnavigation", "tweaks", "appx") {
         $config = Get-Content (Join-Path $script:repoRoot "config\$configName.json") -Raw | ConvertFrom-Json
         foreach ($property in $config.PSObject.Properties) {
             $clauseName = "default"
@@ -103,7 +102,6 @@ Describe "Preset key tooltips" {
                 selectedApps     = [System.Collections.Generic.List[string]]::new()
                 selectedTweaks   = [System.Collections.Generic.List[string]]::new()
                 selectedToggles  = [System.Collections.Generic.List[string]]::new()
-                selectedFeatures = [System.Collections.Generic.List[string]]::new()
                 selectedAppx     = [System.Collections.Generic.List[string]]::new()
                 configs          = $script:selectionConfigs
             }

@@ -13,7 +13,6 @@ BeforeAll {
     function Invoke-WPFUIElements {
         param($configVariable, [string]$targetGridName, [int]$columncount)
     }
-    function Invoke-WinUtilISOCheckExistingWork { }
     function Initialize-WinUtilInstallTabControls { }
     function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
@@ -27,7 +26,6 @@ Describe "Initialize-WinUtilTabContent" {
             configs = @{
                 appnavigation = [pscustomobject]@{}
                 tweaks = [pscustomobject]@{}
-                feature = [pscustomobject]@{}
                 appx = [pscustomobject]@{}
             }
         })
@@ -69,17 +67,12 @@ Describe "Initialize-WinUtilTabContent" {
 
     It "initializes deferred config-backed tabs once" {
         Initialize-WinUtilTabContent -TabName "Tweaks"
-        Initialize-WinUtilTabContent -TabName "Config"
         Initialize-WinUtilTabContent -TabName "AppX"
         Initialize-WinUtilTabContent -TabName "Tweaks"
-        Initialize-WinUtilTabContent -TabName "Config"
         Initialize-WinUtilTabContent -TabName "AppX"
 
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "tweakspanel" -and $columncount -eq 2
-        }
-        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
-            $targetGridName -eq "featurespanel" -and $columncount -eq 2
         }
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
@@ -102,22 +95,6 @@ Describe "Initialize-WinUtilTabContent" {
         Should -Invoke -CommandName Reset-WPFCheckBoxes -Times 1 -Exactly
     }
 
-    It "checks for existing Win11ISO work when the tab is initialized" {
-        Add-Type -AssemblyName WindowsBase
-        $dispatcher = [pscustomobject]@{}
-        $dispatcher | Add-Member -MemberType ScriptMethod -Name BeginInvoke -Value {
-            param($priority, $action)
-            $action.Invoke()
-        }
-        $script:sync.Form = [pscustomobject]@{ Dispatcher = $dispatcher }
-        Mock Invoke-WinUtilISOCheckExistingWork { }
-
-        Initialize-WinUtilTabContent -TabName "Win11ISO"
-        Initialize-WinUtilTabContent -TabName "Win11ISO"
-
-        Should -Invoke -CommandName Invoke-WinUtilISOCheckExistingWork -Times 1 -Exactly
-        $script:sync.InitializedTabs["Win11ISO"] | Should -BeTrue
-    }
 }
 
 Describe "Initialize-WPFUI" {
@@ -152,9 +129,8 @@ Describe "Startup lazy tab wiring" {
         # at all now: Invoke-WPFTab builds whichever tab it selects, and the warmup does the rest.
         $uiScript = Get-Content -Path (Join-Path $script:repoRoot "functions\private\Start-WinUtilUserInterface.ps1") -Raw
 
-        $uiScript | Should -Match 'Invoke-WPFTab "WPFTab1BT"'
+        $uiScript | Should -Match 'Invoke-WPFTab "WPFTab2BT"'
         $uiScript | Should -Not -Match 'targetGridName "tweakspanel"'
-        $uiScript | Should -Not -Match 'targetGridName "featurespanel"'
         $uiScript | Should -Not -Match 'targetGridName "appxpanel"'
     }
 

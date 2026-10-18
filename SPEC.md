@@ -29,7 +29,6 @@ This repository is WinTweaks, a fork of WinUtil branded as WinTweaks in the inte
 - `functions/private/`: internal helper PowerShell functions.
 - `config/`: JSON configuration consumed at compile time and embedded into `$sync.configs`.
 - `xaml/inputXML.xaml`: WPF UI markup embedded into the compiled script.
-- `tools/autounattend.xml`: unattended setup XML embedded for Windows ISO workflows.
 - `pester/`: Pester tests for config and function checks.
 - `lint/PSScriptAnalyser.ps1`: PowerShell Script Analyzer settings.
 - `tools/title-screen/`: uv project that captures WinUtil's Light and Dark themes and generates the title-screen composite.
@@ -40,7 +39,7 @@ This repository is WinTweaks, a fork of WinUtil branded as WinTweaks in the inte
 
 - Provide a single-script Windows utility that can be launched from PowerShell.
 - Keep development modular enough for contributors to work on functions, config, UI, docs, and tooling independently.
-- Make install, tweak, feature, repair, update, and ISO workflows discoverable from the WPF UI.
+- Make tweak, install, AppX and update workflows discoverable from the WPF UI.
 - Keep common lists and options declarative in JSON config where possible.
 - Preserve a repeatable compile process so local builds and GitHub Actions builds produce the distributable script from the same inputs.
 
@@ -60,9 +59,8 @@ This repository is WinTweaks, a fork of WinUtil branded as WinTweaks in the inte
 3. Convert each `config/*.json` file into embedded `$sync.configs` objects.
 4. Special-case `config/applications.json` so keys receive the `WPFInstall` prefix in compiled config.
 5. Embed `xaml/inputXML.xaml` into `$inputXML`.
-6. Embed `tools/autounattend.xml` into `$WinUtilAutounattendXml`.
-7. Append `scripts/main.ps1`.
-8. Write the result to root `winutil.ps1`.
+6. Append `scripts/main.ps1`.
+7. Write the result to root `winutil.ps1`.
 
 Because the final script is concatenated, code cannot rely on runtime module imports or source-relative dot-sourcing unless the compiled script will also contain the required code/data.
 
@@ -83,16 +81,14 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Configuration Contract
 
 - Config files must remain valid JSON and compile cleanly through `ConvertFrom-Json`.
-- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link. Install tab category chips in `xaml/inputXML.xaml` and `Start-WinUtilUserInterface` must match its categories. Apps the user adds by winget ID are kept outside the repository in `%LocalAppData%\winutil\custom-apps.json` and loaded into the Custom category at startup.
-- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems. Checkbox tweaks carry a plain-language `Description`, shown from the row's info icon, and a `risk` of `low`, `medium` or `high`, shown as a coloured dot.
+- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems. Checkbox tweaks carry a plain-language `Description`, shown from the row's info icon, and a `risk` of `low`, `medium` or `high`, shown as a coloured dot.
 - Preset and navigation files reference valid config keys. Renaming a config key requires updating all presets, UI references, docs, and code paths together.
 
 ## Safety Requirements
 
-- Registry, service, package manager, Windows Update, AppX removal, and ISO operations affect the host system and are treated as high-risk.
+- Registry, service, package manager, Windows Update and AppX removal operations affect the host system and are treated as high-risk.
 - Tweak changes include undo metadata when the schema supports it, so changes stay reversible.
 - A System Restore point is offered once per run, when the user starts applying tweaks or the Recommended update profile, never per checkbox. Runs without a window always try to create one and continue with a logged warning if they cannot.
-- ISO workflows never modify the user's original ISO file; they work on copied/mounted content.
 
 ## Docs Site (Astro)
 

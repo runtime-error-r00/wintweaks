@@ -12,7 +12,6 @@ function Update-WinUtilSelections {
         selectedApps     = [System.Collections.Generic.List[string]]::new()
         selectedTweaks   = [System.Collections.Generic.List[string]]::new()
         selectedToggles  = [System.Collections.Generic.List[string]]::new()
-        selectedFeatures = [System.Collections.Generic.List[string]]::new()
         selectedAppx     = [System.Collections.Generic.List[string]]::new()
     }
 
@@ -22,7 +21,6 @@ function Update-WinUtilSelections {
             '^WPFInstall' { 'selectedApps' }
             '^WPFTweaks'  { 'selectedTweaks' }
             '^WPFToggle'  { 'selectedToggles' }
-            '^WPFFeature' { 'selectedFeatures' }
             '^WPFAppx'    { 'selectedAppx' }
         }
 
@@ -43,9 +41,6 @@ function Update-WinUtilSelections {
             }
             'selectedToggles' {
                 $null -ne $sync.configs.tweaks.PSObject.Properties[$cbkey]
-            }
-            'selectedFeatures' {
-                $null -ne $sync.configs.feature.PSObject.Properties[$cbkey]
             }
             'selectedAppx' {
                 $sync.configs.appxHashtable.ContainsKey($cbkey)

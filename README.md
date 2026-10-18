@@ -1,6 +1,6 @@
 # WinTweaks
 
-A Windows 10/11 toolbox that keeps only what is essential and actually works: a curated app installer, a short list of tested tweaks that explain themselves, system repairs, Windows Update profiles and a Windows 11 ISO creator.
+A Windows 10/11 toolbox that keeps only what is essential and actually works: a short list of tested tweaks that explain themselves, a curated app installer and Windows Update profiles.
 
 WinTweaks is based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech.
 
@@ -35,11 +35,9 @@ Nothing is downloaded to disk or installed: the script runs from memory.
 
 | Page | What it does |
 |------|--------------|
-| **Install** | About 100 curated apps in 12 categories, installed with winget (Chocolatey optional). **New PC Kit** selects the essentials for a fresh install, and you can add any winget package by its ID. |
-| **Tweaks** | 15 tested tweaks grouped into Privacy, System, Performance, Interface and Advanced. Each has an info icon that explains what it changes and a coloured risk dot. A System Restore point is offered once, when you press **Run Tweaks**. |
-| **Config** | Windows features (WSL, Hyper-V, Sandbox...), repairs (network reset, SFC/DISM, Windows Update reset, winget reinstall), classic control panels and remote access. |
+| **Tweaks** | 15 tested tweaks grouped into Privacy, System, Performance, Interface and Advanced. Each has an info icon that explains what it changes and a coloured risk dot. A System Restore point is offered once, when you press **Run Tweaks**. From here you can also remove preinstalled Windows apps (AppX). |
+| **Install** | About 100 curated apps in 12 categories, installed with winget (Chocolatey optional). **New PC Kit** selects the essentials for a fresh install. |
 | **Updates** | Recommended profile (feature updates deferred 1 year, quality updates 4 days) or back to Windows defaults. |
-| **Win11 Creator** | Build a customized Windows 11 ISO from an official image. |
 
 Every tweak can be undone from **Undo Selected Tweaks**, except one-off actions such as Disk Cleanup.
 

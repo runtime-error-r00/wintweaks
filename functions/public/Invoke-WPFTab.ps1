@@ -22,11 +22,16 @@ function Invoke-WPFTab {
         [switch]$Yield
     )
 
-    $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
+    # Pages are matched by name, not position: WPFTab2BT opens WPFTab2 wherever it sits
+    $tabName = $ClickedTab -replace "BT$", ""
+    $tabItem = @($sync.WPFTabNav.Items) | Where-Object { $_.Name -eq $tabName } | Select-Object -First 1
+    if ($null -eq $tabItem) {
+        throw "There is no page named $tabName for $ClickedTab."
+    }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab select" -ScriptBlock {
         $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
-        $sync.WPFTabNav.Items[$tabNumber].IsSelected = $true
+        $tabItem.IsSelected = $true
         ($sync.GetEnumerator()).where{$psitem.Key -in $filter} | ForEach-Object {
             if ($ClickedTab -ne $PSItem.name) {
                 $sync[$PSItem.Name].IsChecked = $false
@@ -34,7 +39,7 @@ function Invoke-WPFTab {
                 $sync["$ClickedTab"].IsChecked = $true
             }
         }
-        $sync.currentTab = $sync.WPFTabNav.Items[$tabNumber].Header
+        $sync.currentTab = $tabItem.Header
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab content" -ScriptBlock {
@@ -44,8 +49,7 @@ function Invoke-WPFTab {
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab filter reset" -ScriptBlock {
         $searchText = if ($null -ne $sync.SearchBar) { $sync.SearchBar.Text } else { "" }
         if ($sync.currentTab -eq "Install") {
-            $selectedCategories = if ($sync.SelectedAppCategories) { $sync.SelectedAppCategories.ToArray() } else { @() }
-            Find-AppsByNameOrDescription -SearchString $searchText -Categories $selectedCategories
+            Find-AppsByNameOrDescription -SearchString $searchText
         } elseif ($sync.currentTab -eq "Tweaks" -or $sync.currentTab -eq "AppX") {
             Find-TweaksByNameOrDescription -SearchString $searchText
         }
@@ -54,7 +58,7 @@ function Invoke-WPFTab {
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab search bar" -ScriptBlock {
         # Show search bar in Install, Tweaks, and AppX tabs
         $searchIcon = ($sync.Form.FindName("SearchBar").Parent.Children | Where-Object { $_ -is [System.Windows.Controls.TextBlock] -and $_.Text -eq [char]0xE721 })[0]
-        if ($tabNumber -eq 0 -or $tabNumber -eq 1 -or $tabNumber -eq 5) {
+        if ($sync.currentTab -in @("Install", "Tweaks", "AppX")) {
             $sync.SearchBar.Visibility = "Visible"
             if ($searchIcon) { $searchIcon.Visibility = "Visible" }
         } else {

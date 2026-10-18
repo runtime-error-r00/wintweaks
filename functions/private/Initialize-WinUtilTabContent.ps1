@@ -34,16 +34,8 @@ function Initialize-WinUtilTabContent {
             "Tweaks" {
                 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
             }
-            "Config" {
-                Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2 -Yield:$Yield
-            }
             "AppX" {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield
-            }
-            "Win11ISO" {
-                if (Test-WinUtilUIAlive) {
-                    $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
-                }
             }
         }
         # Controls built just now start unchecked, so anything already chosen by an import or a

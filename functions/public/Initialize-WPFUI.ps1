@@ -62,8 +62,7 @@ function Initialize-WPFUI {
             $appButtons = @(
             [PSCustomObject]@{ Name = "Install";    Icon = [char]0xE118 },
             [PSCustomObject]@{ Name = "Uninstall";  Icon = [char]0xE74D },
-            [PSCustomObject]@{ Name = "Info";       Icon = [char]0xE946 },
-            [PSCustomObject]@{ Name = "Remove";     Icon = [char]0xE711 }
+            [PSCustomObject]@{ Name = "Info";       Icon = [char]0xE946 }
             )
             foreach ($button in $appButtons) {
                 $newButton = New-Object Windows.Controls.Button
@@ -101,20 +100,6 @@ function Initialize-WPFUI {
                         $newButton.Add_Click({
                             $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
                             Start-Process $appObject.link
-                        })
-                    }
-                    "Remove" {
-                        # Only custom apps can be taken off the list; the right-click handler
-                        # shows this button for them alone
-                        $newButton.Visibility = "Collapsed"
-                        $sync.appPopupRemoveButton = $newButton
-                        $newButton.Add_MouseEnter({
-                            $appObject = $sync.configs.applicationsHashtable.$($sync.appPopupSelectedApp)
-                            $this.ToolTip = "Remove $($appObject.content) from your custom apps (does not uninstall it)"
-                        })
-                        $newButton.Add_Click({
-                            $sync.appPopup.IsOpen = $false
-                            Remove-WinUtilCustomApp -AppKey $sync.appPopupSelectedApp
                         })
                     }
                 }
