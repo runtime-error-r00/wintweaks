@@ -2,7 +2,7 @@
 
 A Windows 10/11 toolbox that keeps only what is essential and actually works: a short list of tested tweaks that explain themselves, a curated app installer and Windows Update profiles.
 
-WinTweaks is based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech.
+Website: [wintweaks.tech](https://wintweaks.tech) · Based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech.
 
 ---
 
@@ -13,13 +13,11 @@ WinTweaks is based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Ch
 Open PowerShell or Terminal and run:
 
 ```ps1
-irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex
+irm https://wintweaks.tech/win | iex
 ```
 
-Nothing is downloaded to disk or installed: the script runs from memory.
-
-<!-- Short link: when a domain is available, point a redirect (301/302) at the URL above,
-     then replace the command with: irm https://YOUR-DOMAIN/win | iex -->
+Nothing is downloaded to disk or installed: the script runs from memory. `wintweaks.tech/win` redirects to the latest release on GitHub; the direct link works too:
+`irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1 | iex`
 
 > `irm | iex` runs code from the internet. Read the source first, and to always run the same build, use a specific release instead of `latest`:
 > `irm https://github.com/runtime-error-r00/wintweaks/releases/download/<tag>/winutil.ps1 | iex`
@@ -48,7 +46,7 @@ Every tweak can be undone from **Undo Selected Tweaks**, except one-off actions 
 Apply a preset without the window:
 
 ```powershell
-& ([ScriptBlock]::Create((irm https://github.com/runtime-error-r00/wintweaks/releases/latest/download/winutil.ps1))) -Preset Standard
+& ([ScriptBlock]::Create((irm https://wintweaks.tech/win))) -Preset Standard
 ```
 
 | Preset | Description |
