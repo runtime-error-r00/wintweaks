@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wintweaks-site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "F:/workspace/wintweaks-site", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}
