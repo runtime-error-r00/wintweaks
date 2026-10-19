@@ -58,6 +58,19 @@ One-off actions, such as Disk Cleanup, have nothing to undo. Windows AI removal 
 
 The **Performance Power Plan - Enable** tweak creates and activates a plan named *WinTweaks Performance*: the processor stays at 100%, the hard disk never turns off, sleep and hibernation timeouts are off and the wireless adapter runs at maximum performance. It reduces battery life on laptops. Undo switches back to Balanced and deletes the plan.
 
+### Advanced Page
+
+The **Advanced** page in the sidebar (Alt+A) holds gaming and latency tweaks for experienced users. They trade power use, heat and in some cases security for lower latency, so read each info icon first. They are grouped into:
+
+* **General System**: low-latency system timers, CPU scheduling for games, faster shutdown and menus, power latency tolerance, web search, diagnostics, notifications, background apps, Core Isolation and similar system settings.
+* **Keyboard and Mouse**: accessibility shortcut keys, mouse acceleration, keyboard repeat, input process priority, the mouse and keyboard data queue size and USB power saving.
+* **GPU**: hardware-accelerated GPU scheduling plus separate NVIDIA, AMD and Intel driver tweaks. A vendor tweak only changes graphics cards from that vendor found on this PC.
+* **CPU**: core parking and throttling, sleep states, CPU quotas and Intel-only boot settings. The power plan tweaks change the plan that is active when you run them.
+
+Select tweaks and click **Run Advanced Tweaks**; **Undo Selected** reverts them and **Clear Selection** unticks the page. The Run and Undo buttons on each page only act on that page's selection. The data queue size is a drop-down and is applied as soon as you choose a value.
+
+Driver, USB and power plan tweaks record the values your PC had before the first run under `HKLM\SOFTWARE\WinTweaks\Backup`, and Undo puts exactly those values back. Most Advanced tweaks take effect after a restart.
+
 ### AppX Packages
 
 Open **AppX Removal** from the Tweaks tab to manage the listed Windows apps. Select one or more packages, then choose **Install Selected** or **Remove Selected**.

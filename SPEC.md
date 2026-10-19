@@ -81,7 +81,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Configuration Contract
 
 - Config files must remain valid JSON and compile cleanly through `ConvertFrom-Json`.
-- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems. Checkbox tweaks carry a plain-language `Description`, shown from the row's info icon, and a `risk` of `low`, `medium` or `high`, shown as a coloured dot.
+- `config/applications.json` defines installable applications; each entry includes the fields expected by tests and UI code, such as package manager IDs, category, display content, description, and link.- `config/tweaks.json` defines Windows tweaks; registry and service changes include original values or original states when applicable so undo workflows can restore user systems. Checkbox tweaks carry a plain-language `Description`, shown from the row's info icon, and a `risk` of `low`, `medium` or `high`, shown as a coloured dot. Entries with `"tab": "Advanced"` are shown on the Advanced page instead of the Tweaks page; driver, device and power-plan tweaks whose original values differ per PC record them under `HKLM:\SOFTWARE\WinTweaks\Backup` before changing anything, and undo restores those.
 - Preset and navigation files reference valid config keys. Renaming a config key requires updating all presets, UI references, docs, and code paths together.
 
 ## Safety Requirements
