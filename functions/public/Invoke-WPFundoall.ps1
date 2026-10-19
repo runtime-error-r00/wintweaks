@@ -4,21 +4,17 @@ function Invoke-WPFundoall {
     .SYNOPSIS
         Undoes every selected tweak
 
-    .PARAMETER Tab
-        Undo only the selected tweaks shown on this page (Tweaks or Advanced).
+    .PARAMETER Tweak
+        Undo these tweaks instead of the checked ones. The Advanced page passes the tweaks of
+        the group whose Revert button was pressed.
 
     #>
 
     param(
-        [ValidateSet("Tweaks", "Advanced")]
-        [string]$Tab
+        [string[]]$Tweak
     )
 
-    $tweaks = $sync.selectedTweaks
-    if ($Tab) {
-        $tabTweaks = @((Get-WinUtilTabTweaks -Tab $Tab).PSObject.Properties.Name)
-        $tweaks = @($tweaks | Where-Object { $tabTweaks -contains $_ })
-    }
+    $tweaks = if ($Tweak) { @($Tweak) } else { $sync.selectedTweaks }
 
     if ($tweaks.count -eq 0) {
         Show-WinUtilMessage -Message "Please check the tweaks you wish to undo." -Title "WinUtil" -Button "OK" -Icon "Warning"

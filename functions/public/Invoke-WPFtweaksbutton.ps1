@@ -4,22 +4,17 @@ function Invoke-WPFtweaksbutton {
     .SYNOPSIS
         Invokes the functions associated with each group of checkboxes
 
-    .PARAMETER Tab
-        Run only the selected tweaks shown on this page (Tweaks or Advanced). Without it every
-        selected tweak runs, which is what the -Config and -Preset paths want.
+    .PARAMETER Tweak
+        Run these tweaks instead of the checked ones. The Advanced page passes the tweaks of
+        the group whose Apply button was pressed.
 
   #>
 
   param(
-    [ValidateSet("Tweaks", "Advanced")]
-    [string]$Tab
+    [string[]]$Tweak
   )
 
-  $Tweaks = $sync.selectedTweaks
-  if ($Tab) {
-    $tabTweaks = @((Get-WinUtilTabTweaks -Tab $Tab).PSObject.Properties.Name)
-    $Tweaks = @($Tweaks | Where-Object { $tabTweaks -contains $_ })
-  }
+  $Tweaks = if ($Tweak) { @($Tweak) } else { $sync.selectedTweaks }
 
   if ($Tweaks.count -eq 0) {
     Show-WinUtilMessage -Message "Please check the tweaks you wish to perform." -Title "WinTweaks" -Button "OK" -Icon "Warning"

@@ -133,15 +133,17 @@ function Invoke-WPFButtonAction {
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFSelectNewPCKit" {Invoke-WPFPresets "NewPCKit" -checkboxfilterpattern "WPFInstall*"}
-        "WPFtweaksbutton" {Invoke-WPFtweaksbutton -Tab "Tweaks"}
-        "WPFundoall" {Invoke-WPFundoall -Tab "Tweaks"}
-        "WPFAdvancedTweaksbutton" {Invoke-WPFtweaksbutton -Tab "Advanced"}
-        "WPFAdvancedUndo" {Invoke-WPFundoall -Tab "Advanced"}
-        "WPFClearAdvancedSelection" {
-            (Get-WinUtilTabTweaks -Tab "Advanced").PSObject.Properties.Name |
-                Where-Object { $sync[$_] -is [System.Windows.Controls.CheckBox] } |
-                ForEach-Object { $sync[$_].IsChecked = $false }
-        }
+        "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
+        "WPFundoall" {Invoke-WPFundoall}
+        "WPFAdvancedGeneral" {Invoke-WPFAdvancedGroup -Group "General"}
+        "WPFAdvancedKeyboardMouse" {Invoke-WPFAdvancedGroup -Group "KeyboardMouse"}
+        "WPFAdvancedGpu" {Invoke-WPFAdvancedGroup -Group "GPU"}
+        "WPFAdvancedCpu" {Invoke-WPFAdvancedGroup -Group "CPU"}
+        "WPFAdvancedBack" {Invoke-WPFAdvancedGroup}
+        "WPFAdvancedApply" {Invoke-WPFtweaksbutton -Tweak (Get-WinUtilAdvancedGroup -Group $sync.AdvancedGroup).Tweaks}
+        "WPFAdvancedRevert" {Invoke-WPFundoall -Tweak (Get-WinUtilAdvancedGroup -Group $sync.AdvancedGroup).Tweaks}
+        "WPFAdvancedCoreIsolationOff" {Invoke-WPFtweaksbutton -Tweak "WPFTweaksAdvCoreIsolation"}
+        "WPFAdvancedCoreIsolationOn" {Invoke-WPFundoall -Tweak "WPFTweaksAdvCoreIsolation"}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}

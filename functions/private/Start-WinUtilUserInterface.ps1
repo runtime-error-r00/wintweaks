@@ -325,9 +325,6 @@ function Start-WinUtilUserInterface {
             "Tweaks" {
                 Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
             }
-            "Advanced" {
-                Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
-            }
             "AppX" {
                 Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
             }

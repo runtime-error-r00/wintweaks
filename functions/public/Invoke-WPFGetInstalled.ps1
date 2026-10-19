@@ -44,7 +44,10 @@ function Invoke-WPFGetInstalled {
                 Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
             } else {
                 foreach ($name in $Found) {
-                    $sync.$name.ischecked = $true
+                    # Advanced page tweaks are applied by group and have no checkbox
+                    if ($sync.$name) {
+                        $sync.$name.ischecked = $true
+                    }
                 }
             }
         }

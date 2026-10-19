@@ -50,15 +50,15 @@ function Invoke-WPFTab {
         $searchText = if ($null -ne $sync.SearchBar) { $sync.SearchBar.Text } else { "" }
         if ($sync.currentTab -eq "Install") {
             Find-AppsByNameOrDescription -SearchString $searchText
-        } elseif ($sync.currentTab -in @("Tweaks", "Advanced", "AppX")) {
+        } elseif ($sync.currentTab -eq "Tweaks" -or $sync.currentTab -eq "AppX") {
             Find-TweaksByNameOrDescription -SearchString $searchText
         }
     }
 
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab search bar" -ScriptBlock {
-        # Show search bar in Install, Tweaks, Advanced and AppX tabs
+        # Show search bar in Install, Tweaks, and AppX tabs
         $searchIcon = ($sync.Form.FindName("SearchBar").Parent.Children | Where-Object { $_ -is [System.Windows.Controls.TextBlock] -and $_.Text -eq [char]0xE721 })[0]
-        if ($sync.currentTab -in @("Install", "Tweaks", "Advanced", "AppX")) {
+        if ($sync.currentTab -in @("Install", "Tweaks", "AppX")) {
             $sync.SearchBar.Visibility = "Visible"
             if ($searchIcon) { $searchIcon.Visibility = "Visible" }
         } else {

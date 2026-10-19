@@ -35,7 +35,14 @@ function Initialize-WinUtilTabContent {
                 Invoke-WPFUIElements -configVariable (Get-WinUtilTabTweaks -Tab "Tweaks") -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
             }
             "Advanced" {
-                Invoke-WPFUIElements -configVariable (Get-WinUtilTabTweaks -Tab "Advanced") -targetGridName "advancedpanel" -columncount 2 -Yield:$Yield
+                # The groups are buttons; only the drop-downs, which apply on selection, are generated
+                $dropDowns = [ordered]@{}
+                foreach ($entry in (Get-WinUtilTabTweaks -Tab "Advanced").PSObject.Properties) {
+                    if ($entry.Value.Type -eq "Combobox") {
+                        $dropDowns[$entry.Name] = $entry.Value
+                    }
+                }
+                Invoke-WPFUIElements -configVariable ([pscustomobject]$dropDowns) -targetGridName "advancedqueuepanel" -columncount 1
             }
             "AppX" {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield

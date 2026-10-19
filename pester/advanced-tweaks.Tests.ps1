@@ -8,6 +8,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistryWithBackup.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilDisplayAdapterKey.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilPowerSettingWithBackup.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTabTweaks.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilAdvancedGroup.ps1")
 
     function Write-WinUtilLog {
         param($Message, $Level, $Component)
@@ -115,6 +117,29 @@ Describe "Set-WinUtilPowerSettingWithBackup" {
         $script:powercfgCalls | Should -Contain "/setacvalueindex 381b4222-f694-41f0-9685-ff5bb260df2e SUB_PROCESSOR CPMINCORES 10"
         $script:powercfgCalls | Should -Contain "/setdcvalueindex 381b4222-f694-41f0-9685-ff5bb260df2e SUB_PROCESSOR CPMINCORES 5"
         (Get-ItemProperty -Path $script:backupKey).PSObject.Properties.Name | Should -Not -Contain "Cpu"
+    }
+}
+
+Describe "Get-WinUtilAdvancedGroup" {
+    BeforeAll {
+        $script:sync = @{ configs = @{ tweaks = (Get-Content -Path (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json) } }
+    }
+
+    It "applies every group tweak except drop-downs and standalone actions" {
+        $general = Get-WinUtilAdvancedGroup -Group "General"
+        $keyboard = Get-WinUtilAdvancedGroup -Group "KeyboardMouse"
+
+        $general.Tweaks | Should -Contain "WPFTweaksAdvSystemTimers"
+        $general.Tweaks | Should -Not -Contain "WPFTweaksAdvCoreIsolation"
+        $keyboard.Tweaks | Should -Contain "WPFTweaksAdvMouseAcceleration"
+        $keyboard.Tweaks | Should -Not -Contain "WPFTweaksAdvDataQueueSize"
+        $general.Tweaks | Should -Not -Contain "WPFTweaksTelemetry"
+    }
+
+    It "gives every group at least one tweak" {
+        foreach ($group in "General", "KeyboardMouse", "GPU", "CPU") {
+            (Get-WinUtilAdvancedGroup -Group $group).Tweaks | Should -Not -BeNullOrEmpty
+        }
     }
 }
 

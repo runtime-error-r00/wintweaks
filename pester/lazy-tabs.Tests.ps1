@@ -80,10 +80,11 @@ Describe "Initialize-WinUtilTabContent" {
         }
     }
 
-    It "splits tweaks.json between the Tweaks and Advanced pages" {
+    It "keeps Advanced entries off the Tweaks page and builds only their drop-downs" {
         $script:sync.configs.tweaks = [pscustomobject]@{
             WPFTweaksBasic = [pscustomobject]@{ Content = "Basic" }
             WPFTweaksAdvLatency = [pscustomobject]@{ Content = "Latency"; tab = "Advanced" }
+            WPFTweaksAdvQueue = [pscustomobject]@{ Content = "Queue"; tab = "Advanced"; Type = "Combobox" }
         }
 
         Initialize-WinUtilTabContent -TabName "Tweaks"
@@ -94,8 +95,8 @@ Describe "Initialize-WinUtilTabContent" {
             (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFTweaksBasic"
         }
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
-            $targetGridName -eq "advancedpanel" -and $columncount -eq 2 -and
-            (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFTweaksAdvLatency"
+            $targetGridName -eq "advancedqueuepanel" -and $columncount -eq 1 -and
+            (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFTweaksAdvQueue"
         }
     }
 

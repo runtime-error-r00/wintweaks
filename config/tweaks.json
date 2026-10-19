@@ -930,6 +930,7 @@
     "category": "a__General System",
     "panel": "1",
     "tab": "Advanced",
+    "standalone": true,
     "risk": "high",
     "registry": [
       { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" }
