@@ -14,7 +14,7 @@ function Start-WinUtilTabWarmup {
     #>
 
     $pending = [System.Collections.Queue]::new()
-    foreach ($tab in @("Install", "Tweaks", "AppX")) {
+    foreach ($tab in @("Install", "Tweaks", "Advanced", "AppX")) {
         if (-not $sync.InitializedTabs[$tab]) {
             $pending.Enqueue($tab)
         }

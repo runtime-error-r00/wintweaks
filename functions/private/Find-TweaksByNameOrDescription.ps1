@@ -53,6 +53,9 @@ function Find-TweaksByNameOrDescription {
     if ($null -ne $Sync.currentTab -and $Sync.currentTab -eq "AppX") {
         $panelName = "appxpanel"
     }
+    if ($null -ne $Sync.currentTab -and $Sync.currentTab -eq "Advanced") {
+        $panelName = "advancedpanel"
+    }
 
     $tweaksPanel = $null
     try {

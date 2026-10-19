@@ -158,10 +158,12 @@ Describe "XAML document" {
             "WPFTabNav",
             "WPFTab1",
             "WPFTab2",
+            "WPFTab3",
             "WPFTab4",
             "WPFTab6",
             "WPFTab1BT",
             "WPFTab2BT",
+            "WPFTab3BT",
             "WPFTab4BT",
             "SearchBar",
             "SearchBarIcon",
@@ -169,6 +171,7 @@ Describe "XAML document" {
             "appscategory",
             "appspanel",
             "tweakspanel",
+            "advancedpanel",
             "appxpanel",
             "WPFstandard",
             "WPFminimal",
@@ -178,6 +181,9 @@ Describe "XAML document" {
             "WPFAppxRemoval",
             "WPFTweaksbutton",
             "WPFUndoall",
+            "WPFAdvancedTweaksbutton",
+            "WPFAdvancedUndo",
+            "WPFClearAdvancedSelection",
             "WPFUpdatesdefault",
             "WPFUpdatessecurity",
             "WPFDefaultAppxSelection",
@@ -220,6 +226,7 @@ Describe "XAML document" {
         $expectedTabs = @(
             "WPFTab1:Install",
             "WPFTab2:Tweaks",
+            "WPFTab3:Advanced",
             "WPFTab4:Updates",
             "WPFTab6:AppX"
         )
@@ -281,8 +288,8 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 3
-        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab1BT", "WPFTab4BT")
+        $navButtons.Count | Should -Be 4
+        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab3BT", "WPFTab1BT", "WPFTab4BT")
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }

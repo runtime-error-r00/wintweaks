@@ -576,6 +576,7 @@ function Invoke-WPFUIElements {
     # after that event start visible, so reapply the live filter once this tab is complete.
     $filterPanel = switch ($sync.currentTab) {
         "Tweaks" { "tweakspanel" }
+        "Advanced" { "advancedpanel" }
         "AppX" { "appxpanel" }
     }
     if ($filterPanel -eq $targetGridName -and $null -ne $sync.SearchBar) {

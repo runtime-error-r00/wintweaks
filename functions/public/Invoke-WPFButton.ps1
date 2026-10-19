@@ -133,8 +133,15 @@ function Invoke-WPFButtonAction {
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFSelectNewPCKit" {Invoke-WPFPresets "NewPCKit" -checkboxfilterpattern "WPFInstall*"}
-        "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFundoall" {Invoke-WPFundoall}
+        "WPFtweaksbutton" {Invoke-WPFtweaksbutton -Tab "Tweaks"}
+        "WPFundoall" {Invoke-WPFundoall -Tab "Tweaks"}
+        "WPFAdvancedTweaksbutton" {Invoke-WPFtweaksbutton -Tab "Advanced"}
+        "WPFAdvancedUndo" {Invoke-WPFundoall -Tab "Advanced"}
+        "WPFClearAdvancedSelection" {
+            (Get-WinUtilTabTweaks -Tab "Advanced").PSObject.Properties.Name |
+                Where-Object { $sync[$_] -is [System.Windows.Controls.CheckBox] } |
+                ForEach-Object { $sync[$_].IsChecked = $false }
+        }
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}

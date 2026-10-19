@@ -32,7 +32,10 @@ function Initialize-WinUtilTabContent {
                 Initialize-WinUtilInstallTabControls
             }
             "Tweaks" {
-                Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
+                Invoke-WPFUIElements -configVariable (Get-WinUtilTabTweaks -Tab "Tweaks") -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
+            }
+            "Advanced" {
+                Invoke-WPFUIElements -configVariable (Get-WinUtilTabTweaks -Tab "Advanced") -targetGridName "advancedpanel" -columncount 2 -Yield:$Yield
             }
             "AppX" {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield

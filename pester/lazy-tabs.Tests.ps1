@@ -17,6 +17,7 @@ BeforeAll {
     function Reset-WPFCheckBoxes { param([bool]$doToggles) }
 
     . (Join-Path $script:repoRoot "functions\public\Initialize-WPFUI.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTabTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
 }
 
@@ -76,6 +77,25 @@ Describe "Initialize-WinUtilTabContent" {
         }
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
+        }
+    }
+
+    It "splits tweaks.json between the Tweaks and Advanced pages" {
+        $script:sync.configs.tweaks = [pscustomobject]@{
+            WPFTweaksBasic = [pscustomobject]@{ Content = "Basic" }
+            WPFTweaksAdvLatency = [pscustomobject]@{ Content = "Latency"; tab = "Advanced" }
+        }
+
+        Initialize-WinUtilTabContent -TabName "Tweaks"
+        Initialize-WinUtilTabContent -TabName "Advanced"
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "tweakspanel" -and
+            (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFTweaksBasic"
+        }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "advancedpanel" -and $columncount -eq 2 -and
+            (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFTweaksAdvLatency"
         }
     }
 

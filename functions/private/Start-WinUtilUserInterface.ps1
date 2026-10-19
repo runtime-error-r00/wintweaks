@@ -209,6 +209,7 @@ function Start-WinUtilUserInterface {
             $keyEventArgs = $_
             switch ($_.SystemKey) {
                 "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab and suppress Windows Warning Sound
+                "A" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Advanced tab
                 "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab
                 "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
             }
@@ -322,6 +323,9 @@ function Start-WinUtilUserInterface {
                 Find-AppsByNameOrDescription -SearchString $sync.SearchBar.Text
             }
             "Tweaks" {
+                Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
+            }
+            "Advanced" {
                 Find-TweaksByNameOrDescription -SearchString $sync.SearchBar.Text
             }
             "AppX" {

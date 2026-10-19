@@ -8,6 +8,7 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTabTweaks.ps1")
     . (Join-Path $script:repoRoot "functions\private\Request-WinUtilRestorePoint.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilRestorePointStep.ps1")
 
@@ -432,6 +433,38 @@ Describe "Invoke-WPFtweaksbutton" {
         }
     }
 
+    It "runs only the selected tweaks shown on the page whose button was pressed" {
+        $script:sync.configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry" }
+                WPFTweaksAdvSystemTimers = [pscustomobject]@{ Content = "Timers"; tab = "Advanced" }
+            }
+        }
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:sync.selectedTweaks.Add("WPFTweaksAdvSystemTimers")
+
+        Invoke-WPFtweaksbutton -Tab "Advanced"
+        @($script:capturedTweaksJob.Parameters.Tweaks) | Should -Be @("WPFTweaksAdvSystemTimers")
+
+        Invoke-WPFtweaksbutton -Tab "Tweaks"
+        @($script:capturedTweaksJob.Parameters.Tweaks) | Should -Be @("WPFTweaksTelemetry")
+    }
+
+    It "prompts instead of running another page's selection" {
+        $script:sync.configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry" }
+                WPFTweaksAdvSystemTimers = [pscustomobject]@{ Content = "Timers"; tab = "Advanced" }
+            }
+        }
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+
+        Invoke-WPFtweaksbutton -Tab "Advanced"
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly
+        Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
     It "applies nothing when the restore point step says to stop" {
         $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
         Mock Request-WinUtilRestorePoint { $true }
@@ -478,6 +511,21 @@ Describe "Invoke-WPFundoall" {
             $Message -eq "Please check the tweaks you wish to undo."
         }
         Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+
+    It "undoes only the selected tweaks shown on the page whose button was pressed" {
+        $script:sync.configs = @{
+            tweaks = [pscustomobject]@{
+                WPFTweaksTelemetry = [pscustomobject]@{ Content = "Telemetry" }
+                WPFTweaksAdvSystemTimers = [pscustomobject]@{ Content = "Timers"; tab = "Advanced" }
+            }
+        }
+        $script:sync.selectedTweaks.Add("WPFTweaksTelemetry")
+        $script:sync.selectedTweaks.Add("WPFTweaksAdvSystemTimers")
+
+        Invoke-WPFundoall -Tab "Advanced"
+
+        @($script:capturedUndoJob.Parameters.Tweaks) | Should -Be @("WPFTweaksAdvSystemTimers")
     }
 
     It "undoes every selected tweak inside the job body" {
