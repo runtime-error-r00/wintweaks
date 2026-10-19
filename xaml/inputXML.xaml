@@ -1586,7 +1586,7 @@
                             </Border>
                         </UniformGrid>
                         <Button Name="WPFIsoDownload" Content="Download" HorizontalAlignment="Center" Margin="0,28,0,0" Width="280" Height="56" FontSize="20" FontWeight="SemiBold"/>
-                        <TextBlock Text="Opens the download page on MEGA in your browser." HorizontalAlignment="Center" Margin="0,10,0,0" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock Text="Opens the download page on MediaFire in your browser." HorizontalAlignment="Center" Margin="0,10,0,0" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
