@@ -1345,54 +1345,58 @@
             <TabItem Header="Advanced" Visibility="Collapsed" Name="WPFTab3">
                 <Grid>
                     <!-- Menu: one button per optimization group -->
-                    <ScrollViewer Name="WPFAdvancedMenu" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
-                        <StackPanel>
-                            <Border Style="{StaticResource BorderStyle}">
-                                <TextBlock Padding="10" TextWrapping="Wrap">
-                                    Gaming and latency optimizations for experienced users. Pick a group to see what it changes, then apply or revert it.
-                                    <LineBreak/>They trade power use, heat and some security for lower latency. Most take effect after a restart.
-                                </TextBlock>
-                            </Border>
+                    <Grid Name="WPFAdvancedMenu">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
                             <UniformGrid Columns="2" Margin="0,5,0,0">
                                 <Button Name="WPFAdvancedGeneral" Width="Auto" Height="Auto" Margin="5" Padding="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Margin="8,14,8,14">
-                                        <TextBlock Text="&#xE770;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                        <TextBlock Text="&#xE770;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="General System Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}"/>
-                                            <TextBlock Text="Registry, Windows settings and boot timer optimizations" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                            <TextBlock Text="General System Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
+                                            <TextBlock Text="Registry, Windows settings and boot timer optimizations" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Button>
                                 <Button Name="WPFAdvancedKeyboardMouse" Width="Auto" Height="Auto" Margin="5" Padding="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Margin="8,14,8,14">
-                                        <TextBlock Text="&#xE765;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                        <TextBlock Text="&#xE765;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Keyboard and Mouse Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}"/>
-                                            <TextBlock Text="Input latency, accessibility shortcuts and USB power" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                            <TextBlock Text="Keyboard and Mouse Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
+                                            <TextBlock Text="Input latency, accessibility shortcuts and USB power" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Button>
                                 <Button Name="WPFAdvancedGpu" Width="Auto" Height="Auto" Margin="5" Padding="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Margin="8,14,8,14">
-                                        <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                        <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="GPU Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}"/>
-                                            <TextBlock Text="Driver settings for the NVIDIA, AMD or Intel graphics in this PC" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                            <TextBlock Text="GPU Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
+                                            <TextBlock Text="Driver settings for the NVIDIA, AMD or Intel graphics in this PC" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Button>
                                 <Button Name="WPFAdvancedCpu" Width="Auto" Height="Auto" Margin="5" Padding="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Margin="8,14,8,14">
-                                        <TextBlock Text="&#xE950;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                        <TextBlock Text="&#xE950;" FontFamily="Segoe MDL2 Assets" FontSize="26" Width="44" VerticalAlignment="Center" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="CPU Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}"/>
-                                            <TextBlock Text="Core parking, throttling, sleep states and CPU scheduling" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}"/>
+                                            <TextBlock Text="CPU Optimizations" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
+                                            <TextBlock Text="Core parking, throttling, sleep states and CPU scheduling" TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{DynamicResource ButtonForegroundColor}" Background="Transparent"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Button>
                             </UniformGrid>
-                        </StackPanel>
-                    </ScrollViewer>
+                        </ScrollViewer>
+                        <Border Grid.Row="1" Style="{StaticResource BorderStyle}" Margin="5">
+                            <TextBlock Padding="10" TextWrapping="Wrap">
+                                Gaming and latency optimizations for experienced users. Pick a group to see what it changes, then apply or revert it.
+                                <LineBreak/>They trade power use, heat and some security for lower latency. Most take effect after a restart.
+                            </TextBlock>
+                        </Border>
+                    </Grid>
 
                     <!-- Detail: the group picked from the menu -->
                     <Grid Name="WPFAdvancedDetail" Visibility="Collapsed">
