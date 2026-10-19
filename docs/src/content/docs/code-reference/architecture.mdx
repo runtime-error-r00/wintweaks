@@ -409,7 +409,8 @@ Update UI
 - `Content`: Display name
 - `Description`: What it does
 - `category`: Essential/Advanced/Customize
-- `tab`: `Advanced` puts the entry on the Advanced page; without it the entry is on the Tweaks page. Both pages share `$sync.configs.tweaks`, and their Run/Undo buttons only act on that page's selection
+- `tab`: `Advanced` keeps the entry off the Tweaks page; the Advanced page applies and reverts its entries by `category` group (General System, Keyboard and Mouse, GPU, CPU) through `Get-WinUtilAdvancedGroup`
+- `standalone`: on an Advanced entry, leaves it out of its group's Apply and Revert; it gets its own buttons instead
 - `registry`: Registry changes to make
 - `registry[].Values`: Per-state values for a registry-backed combobox
 - `registry[].DefaultValue`: Effective value when the registry entry is absent
