@@ -575,5 +575,755 @@
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/removeedge"
+  },
+  "WPFTweaksAdvSystemTimers": {
+    "Content": "System Timers - Low Latency",
+    "Description": "Boot settings that keep the system timer ticking at a fixed rate instead of pausing it when the CPU is idle (dynamic tick off, platform tick on, HPET not forced). Can lower input and frame-time latency; costs a little power on laptops. Takes effect after a restart.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      bcdedit.exe /set disabledynamictick yes
+      bcdedit.exe /set useplatformtick yes
+      bcdedit.exe /deletevalue useplatformclock
+      "
+    ],
+    "UndoScript": [
+      "
+      bcdedit.exe /deletevalue disabledynamictick
+      bcdedit.exe /deletevalue useplatformtick
+      "
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvGamePriority": {
+    "Content": "CPU Scheduling - Prioritize Games",
+    "Description": "Gives the program in the foreground longer, higher-priority CPU time slices, lowers the CPU share reserved for background tasks from 20% to 10% and marks games as latency sensitive in the multimedia scheduler.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl",
+        "Name": "Win32PrioritySeparation",
+        "Value": "38",
+        "Type": "DWord",
+        "OriginalValue": "2"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "Name": "SystemResponsiveness",
+        "Value": "10",
+        "Type": "DWord",
+        "OriginalValue": "20"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "Name": "Latency Sensitive",
+        "Value": "True",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "Name": "BackgroundPriority",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvFastShutdown": {
+    "Content": "App Shutdown and Menus - Faster",
+    "Description": "Menus open without delay, and at shutdown Windows waits 1 second instead of 5 for apps and services that do not respond, then closes them on its own. Side effect: an app with unsaved work that hangs at shutdown is closed without asking.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "AutoEndTasks",
+        "Value": "1",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "HungAppTimeout",
+        "Value": "1000",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "WaitToKillAppTimeout",
+        "Value": "1000",
+        "Type": "String",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "LowLevelHooksTimeout",
+        "Value": "1000",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "Name": "MenuShowDelay",
+        "Value": "0",
+        "Type": "String",
+        "OriginalValue": "400"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
+        "Name": "WaitToKillServiceTimeout",
+        "Value": "1000",
+        "Type": "String",
+        "OriginalValue": "5000"
+      }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvLatencyTolerance": {
+    "Content": "Power Latency Tolerance - Minimum",
+    "Description": "Sets the latency tolerance values that the power manager and the graphics driver use when deciding how deep the hardware may go into power saving, so devices wake up faster. Higher idle power use. Takes effect after a restart.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DXGKrnl", "Name": "MonitorLatencyTolerance", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DXGKrnl", "Name": "MonitorRefreshLatencyTolerance", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "ExitLatency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "ExitLatencyCheckEnabled", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "Latency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "LatencyToleranceDefault", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "LatencyToleranceFSVP", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "LatencyTolerancePerfOverride", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "LatencyToleranceScreenOffIR", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "LatencyToleranceVSyncEnabled", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "RtlCapabilityCheckLatency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyActivelyUsed", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyIdleLongTime", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyIdleMonitorOff", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyIdleNoContext", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyIdleShortTime", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultD3TransitionLatencyIdleVeryLongTime", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceIdle0", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceIdle0MonitorOff", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceIdle1", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceIdle1MonitorOff", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceMemory", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceNoContext", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceNoContextMonitorOff", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceOther", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultLatencyToleranceTimerPeriod", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultMemoryRefreshLatencyToleranceActivelyUsed", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultMemoryRefreshLatencyToleranceMonitorOff", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "DefaultMemoryRefreshLatencyToleranceNoContext", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "Latency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "MaxIAverageGraphicsLatencyInOneBucket", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "MiracastPerfTrackGraphicsLatency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "MonitorLatencyTolerance", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "MonitorRefreshLatencyTolerance", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Power", "Name": "TransitionLatency", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvWebSearch": {
+    "Content": "Windows Search - Web Results Off",
+    "Description": "Start menu search only looks at your PC: no Bing web results, no cloud search, no search location and no Cortana on the lock screen.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search", "Name": "BingSearchEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "AllowSearchToUseLocation", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "ConnectedSearchPrivacy", "Value": "3", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "ConnectedSearchSafeSearch", "Value": "3", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "ConnectedSearchUseWeb", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "ConnectedSearchUseWebOverMeteredConnections", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "AllowCloudSearch", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "AllowCortanaAboveLock", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "DisableWebSearch", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "Name": "DoNotUseWebResults", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SearchCompanion", "Name": "DisableContentFileUpdates", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvDiagnostics": {
+    "Content": "Diagnostic Tracing and Compatibility Telemetry - Disable",
+    "Description": "Stops the diagnostic trace loggers, the disk and power diagnostics tasks, Windows Insider experiments and the application compatibility telemetry. Also turns off the Program Compatibility Assistant and compatibility engine, so very old programs no longer get automatic fixes.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\AutoLogger-Diagtrack-Listener", "Name": "Start", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\DiagLog", "Name": "Start", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Diagnostics\\Performance", "Name": "DisableDiagnosticTracing", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WDI\\{9c5a40da-b965-4fc3-8781-88dd50a6299d}", "Name": "ScenarioExecutionEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\System", "Name": "AllowExperimentation", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "AITEnable", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "AllowTelemetry", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "DisableInventory", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "DisableUAR", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "DisableEngine", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "Name": "DisablePCA", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "InvokeScript": [
+      "
+      Disable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\Application Experience\\' -TaskName 'StartupAppTask' -ErrorAction SilentlyContinue
+      Disable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\DiskDiagnostic\\' -TaskName 'Microsoft-Windows-DiskDiagnosticDataCollector' -ErrorAction SilentlyContinue
+      Disable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\DiskDiagnostic\\' -TaskName 'Microsoft-Windows-DiskDiagnosticResolver' -ErrorAction SilentlyContinue
+      Disable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\Power Efficiency Diagnostics\\' -TaskName 'AnalyzeSystem' -ErrorAction SilentlyContinue
+      "
+    ],
+    "UndoScript": [
+      "
+      Enable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\Application Experience\\' -TaskName 'StartupAppTask' -ErrorAction SilentlyContinue
+      Enable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\DiskDiagnostic\\' -TaskName 'Microsoft-Windows-DiskDiagnosticDataCollector' -ErrorAction SilentlyContinue
+      Enable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\DiskDiagnostic\\' -TaskName 'Microsoft-Windows-DiskDiagnosticResolver' -ErrorAction SilentlyContinue
+      Enable-ScheduledTask -TaskPath '\\Microsoft\\Windows\\Power Efficiency Diagnostics\\' -TaskName 'AnalyzeSystem' -ErrorAction SilentlyContinue
+      "
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvFeeds": {
+    "Content": "News and Interests Feed - Disable",
+    "Description": "Turns off the news and interests feed on the taskbar and in Widgets.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds", "Name": "EnableFeeds", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh", "Name": "AllowNewsAndInterests", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvMaintenance": {
+    "Content": "Automatic Maintenance - Disable",
+    "Description": "Stops the nightly Automatic Maintenance run, so it cannot start disk, update and scan jobs while you play. Those jobs then only run when you start them, for example drive optimization from the Defragment and Optimize Drives app.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance", "Name": "MaintenanceDisabled", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvNotifications": {
+    "Content": "Notifications - Disable",
+    "Description": "Turns off notification pop-ups and their sound, removes the notification center and silences the Settings, AutoPlay, low disk, printer, Security and Maintenance and Wi-Fi notifications. You will no longer see messages from apps such as chat or mail clients.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications", "Name": "ToastEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", "Name": "NOC_GLOBAL_SETTING_ALLOW_NOTIFICATION_SOUND", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", "Name": "NOC_GLOBAL_SETTING_ALLOW_CRITICAL_TOASTS_ABOVE_LOCK", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.AutoPlay", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.LowDisk", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.Print.Notification", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.SecurityAndMaintenance", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.WiFiNetworkManager", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer", "Name": "DisableNotificationCenter", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvSync": {
+    "Content": "Settings Sync and Shared Experiences - Disable",
+    "Description": "Stops Windows from syncing your settings, theme and passwords between PCs through your Microsoft account, and from continuing app sessions on other devices.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CDP", "Name": "CdpSessionUserAuthzPolicy", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\CDP", "Name": "NearShareChannelUserAuthzPolicy", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\SettingSync", "Name": "SyncPolicy", "Value": "5", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync", "Name": "DisableSettingSync", "Value": "2", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync", "Name": "DisableSettingSyncUserOverride", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvContentDelivery": {
+    "Content": "Automatic App Reinstall and Suggestions - Disable",
+    "Description": "Stops Windows from silently reinstalling preinstalled and manufacturer apps you removed, and from showing suggested content.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "PreInstalledAppsEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "PreInstalledAppsEverEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "SilentInstalledAppsEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "OemPreInstalledAppsEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "ContentDeliveryAllowed", "Value": "0", "Type": "DWord", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "Name": "SubscribedContentEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvBackgroundApps": {
+    "Content": "Background Apps - Disable",
+    "Description": "Stops Microsoft Store apps from running in the background. Side effect: those apps no longer update live tiles or send notifications while closed.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications", "Name": "GlobalUserDisabled", "Value": "1", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search", "Name": "BackgroundAppGlobalToggle", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvTransparency": {
+    "Content": "Transparency Effects - Disable",
+    "Description": "Makes the taskbar, Start menu and windows solid instead of see-through.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "Name": "EnableTransparency", "Value": "0", "Type": "DWord", "OriginalValue": "1" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvBiometrics": {
+    "Content": "Biometrics - Disable",
+    "Description": "Turns off fingerprint and face recognition. Side effect: Windows Hello face or fingerprint sign-in stops working; you sign in with your PIN or password.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Biometrics", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvWindowedGames": {
+    "Content": "Optimizations for Windowed Games - Enable",
+    "Description": "Windows 11. Turns on Optimizations for windowed games, which gives borderless and windowed games the lower latency of full screen, and turns off the variable refresh rate optimization. Replaces any other choice saved on the Graphics settings page, such as Auto HDR.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences", "Name": "DirectXUserGlobalSettings", "Value": "VRROptimizeEnable=0;SwapEffectUpgradeEnable=1;", "Type": "String", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvCoreIsolation": {
+    "Content": "Core Isolation (Memory Integrity) - Disable",
+    "Description": "Turns off Memory Integrity, which uses virtualization to stop malicious drivers. Can raise game performance, but leaves the PC more exposed to driver-based attacks. Undo turns Memory Integrity on. Takes effect after a restart.",
+    "category": "a__General System",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "high",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", "Name": "Enabled", "Value": "0", "Type": "DWord", "OriginalValue": "1" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvAccessibilityKeys": {
+    "Content": "Sticky, Filter, Toggle and Mouse Keys Shortcuts - Disable",
+    "Description": "Stops pressing Shift five times, holding Shift or Num Lock, or Alt+Shift+Num Lock from turning on Sticky Keys, Filter Keys, Toggle Keys or Mouse Keys in the middle of a game.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Control Panel\\Accessibility\\Keyboard Response", "Name": "Flags", "Value": "122", "Type": "String", "OriginalValue": "126" },
+      { "Path": "HKCU:\\Control Panel\\Accessibility\\ToggleKeys", "Name": "Flags", "Value": "58", "Type": "String", "OriginalValue": "62" },
+      { "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys", "Name": "Flags", "Value": "506", "Type": "String", "OriginalValue": "510" },
+      { "Path": "HKCU:\\Control Panel\\Accessibility\\MouseKeys", "Name": "Flags", "Value": "0", "Type": "String", "OriginalValue": "62" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvMouseAcceleration": {
+    "Content": "Mouse Acceleration - Disable",
+    "Description": "Turns off Enhance pointer precision, so the pointer moves the same distance for the same hand movement whatever the speed (1:1 movement). Applies after you sign out.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Control Panel\\Mouse", "Name": "MouseSpeed", "Value": "0", "Type": "String", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Control Panel\\Mouse", "Name": "MouseThreshold1", "Value": "0", "Type": "String", "OriginalValue": "6" },
+      { "Path": "HKCU:\\Control Panel\\Mouse", "Name": "MouseThreshold2", "Value": "0", "Type": "String", "OriginalValue": "10" },
+      { "Path": "HKCU:\\Control Panel\\Mouse", "Name": "MouseSensitivity", "Value": "10", "Type": "String", "OriginalValue": "10" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvKeyboardRepeat": {
+    "Content": "Keyboard Repeat - Fastest",
+    "Description": "A held key starts repeating after the shortest delay and repeats at the highest rate Windows allows. Applies after you sign out.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Control Panel\\Keyboard", "Name": "KeyboardDelay", "Value": "0", "Type": "String", "OriginalValue": "1" },
+      { "Path": "HKCU:\\Control Panel\\Keyboard", "Name": "KeyboardSpeed", "Value": "31", "Type": "String", "OriginalValue": "31" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvCsrssPriority": {
+    "Content": "Input Process (csrss) Priority - High",
+    "Description": "Runs csrss.exe, the Windows process that handles keyboard and mouse input, at high CPU and I/O priority. Takes effect after a restart.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions", "Name": "CpuPriorityClass", "Value": "4", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions", "Name": "IoPriority", "Value": "3", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvDataQueueSize": {
+    "Content": "Mouse and Keyboard Data Queue Size",
+    "Description": "How many mouse and keyboard events Windows buffers. A smaller queue can lower input latency, but a value too small for your CPU makes the mouse or keyboard stutter. Applied as soon as you choose it; takes effect after a restart.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "Type": "Combobox",
+    "ComboItems": "Windows default (100)|High-end CPU (19)|Mid-range CPU (24)|Low-end CPU (34)",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\mouclass\\Parameters",
+        "Name": "MouseDataQueueSize",
+        "Type": "DWord",
+        "DefaultValue": "100",
+        "Values": {
+          "Windows default (100)": "100",
+          "High-end CPU (19)": "19",
+          "Mid-range CPU (24)": "24",
+          "Low-end CPU (34)": "34"
+        }
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\kbdclass\\Parameters",
+        "Name": "KeyboardDataQueueSize",
+        "Type": "DWord",
+        "DefaultValue": "100",
+        "Values": {
+          "Windows default (100)": "100",
+          "High-end CPU (19)": "19",
+          "Mid-range CPU (24)": "24",
+          "Low-end CPU (34)": "34"
+        }
+      }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvUsbPower": {
+    "Content": "USB Power Saving - Disable",
+    "Description": "Keeps USB controllers and hubs fully powered (no selective suspend, no deep sleep) and raises the priority of the USB driver threads, so mice, keyboards and headsets never wake up late. Higher power use on laptops. Undo restores the previous values. Takes effect after a restart.",
+    "category": "b__Keyboard and Mouse",
+    "panel": "1",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      $controllers = @(Get-PnpDevice -Class USB -PresentOnly -ErrorAction SilentlyContinue | Where-Object { $_.InstanceId -like 'PCI\\VEN_*' } | ForEach-Object { \"HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\$($_.InstanceId)\\Device Parameters\" })
+      $powerSettings = @('AllowIdleIrpInD3', 'D3ColdSupported', 'DeviceSelectiveSuspended', 'EnableSelectiveSuspend', 'EnhancedPowerManagementEnabled', 'SelectiveSuspendEnabled', 'SelectiveSuspendOn') | ForEach-Object { @{ Name = $_; Type = 'DWord'; Value = 0 } }
+      Set-WinUtilRegistryWithBackup -Name 'AdvUsbPower' -Path $controllers -Settings $powerSettings
+      Set-WinUtilRegistryWithBackup -Name 'AdvUsbPower' -Path @('HKLM:\\SYSTEM\\CurrentControlSet\\Services\\usbxhci\\Parameters', 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\USBHUB3\\Parameters') -Settings @(@{ Name = 'ThreadPriority'; Type = 'DWord'; Value = 31 })
+      Set-WinUtilRegistryWithBackup -Name 'AdvUsbPower' -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\USB' -Settings @(@{ Name = 'DisableSelectiveSuspend'; Type = 'DWord'; Value = 1 })
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilRegistryWithBackup -Name 'AdvUsbPower' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvHags": {
+    "Content": "Hardware-Accelerated GPU Scheduling - Enable",
+    "Description": "Lets the graphics card manage its own memory and scheduling, which can lower latency. Needs a GPU and driver that support it (NVIDIA GTX 10 series, AMD RX 5000 or newer). Takes effect after a restart.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", "Name": "HwSchMode", "Value": "2", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvNvidiaLatency": {
+    "Content": "NVIDIA - Low Latency Driver Settings",
+    "Description": "NVIDIA graphics cards only. Turns off GPU preemption, keeps the driver's memory contiguous and lowers its power-state latency. Can reduce input lag; some users see driver timeouts with preemption off. Undo restores the previous driver values. Takes effect after a restart.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      $adapterSettings = @(
+        @{ Name = 'PreferSystemMemoryContiguous'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'D3PCLatency'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'GPUPreemptionLevel'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'ComputePreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidGfxPreemptionVGPU'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidBufferPreemptionForHighTdrTimeout'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableAsyncMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableSCGMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'PerfAnalyzeMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidGfxPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableCEPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'DisableCudaContextPreemption'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'DisablePreemptionOnS3S4'; Type = 'DWord'; Value = 1 }
+      )
+      $adapters = @(Get-WinUtilDisplayAdapterKey -Vendor NVIDIA)
+      if ($adapters.Count -eq 0) {
+        Write-Host 'No NVIDIA graphics card found, nothing to change.'
+        return
+      }
+      Set-WinUtilRegistryWithBackup -Name 'AdvNvidiaLatency' -Path $adapters -Settings $adapterSettings
+      Set-WinUtilRegistryWithBackup -Name 'AdvNvidiaLatency' -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\nvlddmkm' -Settings @(
+        @{ Name = 'DisablePreemption'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'DisableCudaContextPreemption'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'EnableCEPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'DisablePreemptionOnS3S4'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'ComputePreemption'; Type = 'DWord'; Value = 0 }
+      )
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilRegistryWithBackup -Name 'AdvNvidiaLatency' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvNvidiaHdcp": {
+    "Content": "NVIDIA - HDCP Disable",
+    "Description": "NVIDIA graphics cards only. Turns off HDCP copy protection on the display output. Side effect: protected video (Netflix, Blu-ray, some streaming apps) may refuse to play or play in low quality. Takes effect after a restart.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "high",
+    "InvokeScript": [
+      "
+      $adapters = @(Get-WinUtilDisplayAdapterKey -Vendor NVIDIA)
+      if ($adapters.Count -eq 0) {
+        Write-Host 'No NVIDIA graphics card found, nothing to change.'
+        return
+      }
+      Set-WinUtilRegistryWithBackup -Name 'AdvNvidiaHdcp' -Path $adapters -Settings @(@{ Name = 'RMHdcpKeyglobZero'; Type = 'DWord'; Value = 1 })
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilRegistryWithBackup -Name 'AdvNvidiaHdcp' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvNvidiaTelemetry": {
+    "Content": "NVIDIA Telemetry - Disable",
+    "Description": "NVIDIA graphics cards only. Turns off the NVIDIA telemetry, crash report and daily driver update check tasks, and opts out of NVIDIA Control Panel usage data.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "low",
+    "registry": [
+      { "Path": "HKCU:\\Software\\NVIDIA Corporation\\NVControlPanel2\\Client", "Name": "OptInOrOutPreference", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "InvokeScript": [
+      "
+      Get-ScheduledTask -ErrorAction SilentlyContinue | Where-Object { $_.TaskName -like 'NvTm*' -or $_.TaskName -like 'NvDriverUpdateCheckDaily*' -or $_.TaskName -like 'NVIDIA GeForce Experience SelfUpdate*' } | Disable-ScheduledTask -ErrorAction SilentlyContinue
+      "
+    ],
+    "UndoScript": [
+      "
+      Get-ScheduledTask -ErrorAction SilentlyContinue | Where-Object { $_.TaskName -like 'NvTm*' -or $_.TaskName -like 'NvDriverUpdateCheckDaily*' -or $_.TaskName -like 'NVIDIA GeForce Experience SelfUpdate*' } | Enable-ScheduledTask -ErrorAction SilentlyContinue
+      "
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvAmdGpu": {
+    "Content": "AMD - Low Latency Driver Settings",
+    "Description": "AMD Radeon graphics cards only. Turns off driver-forced anti-aliasing and anisotropic filtering, the Radeon overlay, frame rate target, stutter mode and GPU preemption, turns on Radeon Anti-Lag (De-Lag) and sets a short flip queue. Undo restores the previous driver values. Takes effect after a restart.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      $adapters = @(Get-WinUtilDisplayAdapterKey -Vendor AMD)
+      if ($adapters.Count -eq 0) {
+        Write-Host 'No AMD graphics card found, nothing to change.'
+        return
+      }
+      Set-WinUtilRegistryWithBackup -Name 'AdvAmdGpu' -Path $adapters -Settings @(
+        @{ Name = '3D_Refresh_Rate_Override_DEF'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'AllowSnapshot'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'AAF_NA'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'AntiAlias_NA'; Type = 'String'; Value = '0' },
+        @{ Name = 'ASTT_NA'; Type = 'String'; Value = '0' },
+        @{ Name = 'AllowSubscription'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'AreaAniso_NA'; Type = 'String'; Value = '0' },
+        @{ Name = 'AllowRSOverlay'; Type = 'String'; Value = 'false' },
+        @{ Name = 'Adaptive De-interlacing'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'AllowSkins'; Type = 'String'; Value = 'false' },
+        @{ Name = 'AutoColorDepthReduction_NA'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'KMD_DeLagEnabled'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'KMD_FRTEnabled'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'DisableDMACopy'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'DisableBlockWrite'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'StutterMode'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'GPUPreemptionLevel'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'ComputePreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidGfxPreemptionVGPU'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidBufferPreemptionForHighTdrTimeout'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableAsyncMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableSCGMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'PerfAnalyzeMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidGfxPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableMidBufferPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'EnableCEPreemption'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'DisableCudaContextPreemption'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'DisablePreemptionOnS3S4'; Type = 'DWord'; Value = 1 }
+      )
+      Set-WinUtilRegistryWithBackup -Name 'AdvAmdGpu' -Path ($adapters | ForEach-Object { \"$_\\UMD\" }) -Settings @(
+        @{ Name = 'Main3D_DEF'; Type = 'String'; Value = '1' },
+        @{ Name = 'Main3D'; Type = 'Binary'; Value = [byte[]](0x31, 0x00) },
+        @{ Name = 'FlipQueueSize'; Type = 'Binary'; Value = [byte[]](0x31, 0x00) },
+        @{ Name = 'ShaderCache'; Type = 'Binary'; Value = [byte[]](0x32, 0x00) },
+        @{ Name = 'TFQ'; Type = 'Binary'; Value = [byte[]](0x32, 0x00) }
+      )
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilRegistryWithBackup -Name 'AdvAmdGpu' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvIntelGpu": {
+    "Content": "Intel - Graphics Driver Settings",
+    "Description": "Intel graphics only. Turns off adaptive V-Sync and the overlay quality enhancement, keeps DisplayPort links fully powered and reserves 512 MB of system memory for the integrated GPU. Undo restores the previous driver values. Takes effect after a restart.",
+    "category": "c__GPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      $adapters = @(Get-WinUtilDisplayAdapterKey -Vendor Intel)
+      if ($adapters.Count -eq 0) {
+        Write-Host 'No Intel graphics found, nothing to change.'
+        return
+      }
+      Set-WinUtilRegistryWithBackup -Name 'AdvIntelGpu' -Path $adapters -Settings @(
+        @{ Name = 'Disable_OverlayDSQualityEnhancement'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'IncreaseFixedSegment'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'AdaptiveVsyncEnabled'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'DisablePFonDP'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'EnableCompensationForDVI'; Type = 'DWord'; Value = 1 },
+        @{ Name = 'NoFastLinkTrainingForeDP'; Type = 'DWord'; Value = 0 },
+        @{ Name = 'ACPowerPolicyVersion'; Type = 'DWord'; Value = 16898 },
+        @{ Name = 'DCPowerPolicyVersion'; Type = 'DWord'; Value = 16642 }
+      )
+      Set-WinUtilRegistryWithBackup -Name 'AdvIntelGpu' -Path 'HKLM:\\SOFTWARE\\Intel\\GMM' -Settings @(@{ Name = 'DedicatedSegmentSize'; Type = 'DWord'; Value = 512 })
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilRegistryWithBackup -Name 'AdvIntelGpu' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvCpuPower": {
+    "Content": "CPU Core Parking and Throttling - Disable",
+    "Description": "Changes the active power plan so every CPU core stays awake at full speed on mains power: no core parking, minimum processor state 100%, no throttle states, active cooling first. More heat, fan noise and power use; do not use on a PC that overheats. Undo restores the previous plan values.",
+    "category": "d__CPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "high",
+    "InvokeScript": [
+      "
+      Set-WinUtilPowerSettingWithBackup -Name 'AdvCpuPower' -Settings @(
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = 'CPMINCORES'; AC = 100 },
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = 'PROCTHROTTLEMIN'; AC = 100 },
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = 'IDLESCALING'; AC = 1 },
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = 'THROTTLING'; AC = 0 },
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = 'SYSCOOLPOL'; AC = 1; DC = 1 },
+        @{ SubGroup = 'SUB_PROCESSOR'; Setting = '4d2b0152-7d5c-498b-88e2-34345392a2c5'; AC = 5000 }
+      )
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilPowerSettingWithBackup -Name 'AdvCpuPower' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvSleepStates": {
+    "Content": "Away Mode, Standby and Hybrid Sleep - Disable",
+    "Description": "Changes the active power plan so that on mains power the PC never enters standby, away mode or hybrid sleep. Avoids wake-up stutters on a desktop; not meant for laptops. Undo restores the previous plan values.",
+    "category": "d__CPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "medium",
+    "InvokeScript": [
+      "
+      Set-WinUtilPowerSettingWithBackup -Name 'AdvSleepStates' -Settings @(
+        @{ SubGroup = 'SUB_SLEEP'; Setting = 'AWAYMODE'; AC = 0 },
+        @{ SubGroup = 'SUB_SLEEP'; Setting = 'ALLOWSTANDBY'; AC = 0 },
+        @{ SubGroup = 'SUB_SLEEP'; Setting = 'HYBRIDSLEEP'; AC = 0 }
+      )
+      "
+    ],
+    "UndoScript": [
+      "Set-WinUtilPowerSettingWithBackup -Name 'AdvSleepStates' -Undo"
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvCpuScheduler": {
+    "Content": "CPU Quotas and Power Event Processor - Disable",
+    "Description": "Turns off fair-share CPU quotas between user sessions and the power manager's event processor, so the foreground game is not slowed down by CPU rationing. Takes effect after a restart.",
+    "category": "d__CPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "medium",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Quota System", "Name": "EnableCpuQuota", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" },
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "Name": "EventProcessorEnabled", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
+  },
+  "WPFTweaksAdvIntelCpu": {
+    "Content": "Intel CPU - TSX and Isolation Boot Settings",
+    "Description": "Intel processors only. Turns Intel TSX on and turns off isolated user-mode context and in-memory boot settings. Can help some workloads, but TSX is off by default because of the TAA security flaw, so this weakens protection. Takes effect after a restart.",
+    "category": "d__CPU",
+    "panel": "2",
+    "tab": "Advanced",
+    "risk": "high",
+    "registry": [
+      { "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "Name": "DisableTsx", "Value": "0", "Type": "DWord", "OriginalValue": "<RemoveEntry>" }
+    ],
+    "InvokeScript": [
+      "
+      if ((Get-CimInstance Win32_Processor | Select-Object -First 1).Manufacturer -ne 'GenuineIntel') {
+        Write-Host 'This PC does not have an Intel processor, skipping the boot settings.'
+        return
+      }
+      bcdedit.exe /set allowedinmemorysettings 0x0
+      bcdedit.exe /set isolatedcontext No
+      "
+    ],
+    "UndoScript": [
+      "
+      bcdedit.exe /deletevalue allowedinmemorysettings
+      bcdedit.exe /deletevalue isolatedcontext
+      "
+    ],
+    "link": "https://github.com/runtime-error-r00/wintweaks"
   }
 }
