@@ -162,11 +162,13 @@ Describe "XAML document" {
             "WPFTab4",
             "WPFTab5",
             "WPFTab6",
+            "WPFTab7",
             "WPFTab1BT",
             "WPFTab2BT",
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
+            "WPFTab7BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
@@ -244,7 +246,8 @@ Describe "XAML document" {
             "WPFTab3:Advanced",
             "WPFTab4:Updates",
             "WPFTab5:Windows 11 ISO",
-            "WPFTab6:AppX"
+            "WPFTab6:AppX",
+            "WPFTab7:Memory Cleaner"
         )
 
         if (@($actualTabs).Count -ne $expectedTabs.Count) {
@@ -304,8 +307,8 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 5
-        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab3BT", "WPFTab1BT", "WPFTab4BT", "WPFTab5BT")
+        $navButtons.Count | Should -Be 6
+        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab3BT", "WPFTab1BT", "WPFTab4BT", "WPFTab7BT", "WPFTab5BT")
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }
@@ -419,6 +422,7 @@ Describe "XAML and sync wiring" {
             "selectedToggles",
             "currentTab",
             "AdvancedGroup",
+            "MemoryCleanerSettings",
             "selectedAppsStackPanel",
             "selectedAppsstackPanel",
             "selectedAppsPopup",

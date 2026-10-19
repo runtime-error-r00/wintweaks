@@ -146,6 +146,8 @@ function Invoke-WPFButtonAction {
         "WPFAdvancedCoreIsolationOn" {Invoke-WPFundoall -Tweak "WPFTweaksAdvCoreIsolation"}
         # The download itself happens in the browser, on the MediaFire page
         "WPFIsoDownload" {Start-Process "https://www.mediafire.com/file/rinjiq40p29bkjw/Win11_Debloated_Lucky.iso/file"}
+        "WPFMemoryClean" {Invoke-WPFMemoryClean}
+        "WPFMemoryRefresh" {Update-WinUtilMemoryCleanerView}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}

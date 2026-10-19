@@ -212,6 +212,7 @@ function Start-WinUtilUserInterface {
                 "A" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Advanced tab
                 "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab
                 "U" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Updates tab
+                "M" { Invoke-WPFButton "WPFTab7BT"; $keyEventArgs.Handled = $true } # Navigate to Memory Cleaner tab
             }
         }
         # Handle Ctrl key combinations for specific actions

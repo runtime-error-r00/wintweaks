@@ -44,6 +44,9 @@ function Initialize-WinUtilTabContent {
                 }
                 Invoke-WPFUIElements -configVariable ([pscustomobject]$dropDowns) -targetGridName "advancedqueuepanel" -columncount 1
             }
+            "Memory Cleaner" {
+                Initialize-WinUtilMemoryCleanerPage
+            }
             "AppX" {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield
             }

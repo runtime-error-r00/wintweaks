@@ -47,6 +47,7 @@ export default defineConfig({
 						{ label: 'Applications', slug: 'guides/application' },
 						{ label: 'Tweaks', slug: 'guides/tweaks' },
 						{ label: 'Updates', slug: 'guides/updates' },
+						{ label: 'Memory Cleaner', slug: 'guides/memory-cleaner' },
 						{ label: 'Windows 11 ISO', slug: 'guides/windows-11-iso' },
 						{ label: 'Automation', slug: 'guides/automation' },
 					],

@@ -1,6 +1,6 @@
 # WinTweaks
 
-A Windows 10/11 toolbox that keeps only what is essential and actually works: a short list of tested tweaks that explain themselves, a curated app installer and Windows Update profiles.
+A Windows 10/11 toolbox that keeps only what is essential and actually works: a short list of tested tweaks that explain themselves, a curated app installer, Windows Update profiles and a memory cleaner.
 
 Website: [wintweaks.tech](https://wintweaks.tech) · Based on [WinUtil](https://github.com/ChrisTitusTech/winutil) by Chris Titus Tech.
 
@@ -36,6 +36,8 @@ Nothing is downloaded to disk or installed: the script runs from memory. `wintwe
 | **Tweaks** | 15 tested tweaks grouped into Privacy, System, Performance, Interface and Advanced. Each has an info icon that explains what it changes and a coloured risk dot. A System Restore point is offered once, when you press **Run Tweaks**. From here you can also remove preinstalled Windows apps (AppX). |
 | **Install** | About 100 curated apps in 12 categories, installed with winget (Chocolatey optional). **New PC Kit** selects the essentials for a fresh install. |
 | **Updates** | Recommended profile (feature updates deferred 1 year, quality updates 4 days) or back to Windows defaults. |
+| **Memory Cleaner** | Frees RAM held by process working sets, the system file cache, the modified and standby lists and the combined page list, with the Windows memory functions. Shows memory in use before and after, and what each area released. |
+| **Windows 11 ISO** | A Windows 11 installation image already modded by WinTweaks: no Microsoft bloat, local account, faster installation. **Download** opens the MediaFire page in your browser. |
 
 Every tweak can be undone from **Undo Selected Tweaks**, except one-off actions such as Disk Cleanup.
 

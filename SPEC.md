@@ -71,6 +71,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 - Long-running operations use runspaces or existing async patterns so the UI remains responsive.
 - UI updates from background work are dispatched back to the WPF UI thread.
 - Declarative features such as apps, tweaks, presets, DNS providers, and navigation stay in `config/*.json` unless code is required.
+- `$sync.preferences` is not persisted. The Memory Cleaner page is the one exception that keeps settings between runs: its ticked areas, in `%LocalAppData%\winutil\memorycleaner.json`. Its native calls are compiled once per process by `Initialize-WinUtilMemoryNative` (`Add-Type`), from the Win32 documentation and the MIT-licensed phnt headers.
 
 ## UI And Event Contract
 

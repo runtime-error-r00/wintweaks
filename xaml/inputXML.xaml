@@ -1016,6 +1016,12 @@
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>U</Underline>pdates</TextBlock>
                     </StackPanel>
                 </ToggleButton>
+                <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab7BT" ToolTip="Free up RAM held by working sets and caches (Alt+M)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE964;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
+                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"><Underline>M</Underline>emory Cleaner</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab5BT" ToolTip="Download the WinTweaks Windows 11 ISO">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE958;" FontFamily="Segoe MDL2 Assets" FontSize="{DynamicResource NavIconFontSize}" Width="28" Background="Transparent" VerticalAlignment="Center" Foreground="{DynamicResource MainForegroundColor}"/>
@@ -1635,6 +1641,89 @@
                             <Button Name="WPFBackToTweaks" Content="Back to Tweaks" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFInstallSelectedAppx" Content="Install Selected" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                             <Button Name="WPFRemoveSelectedAppx" Content="Remove Selected" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                        </WrapPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Memory Cleaner" Visibility="Collapsed" Name="WPFTab7">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
+                        <StackPanel>
+                            <TextBlock Text="Memory Cleaner" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Margin="5,5,5,2" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <TextBlock TextWrapping="Wrap" Margin="5,2,5,8" Background="Transparent" Foreground="{DynamicResource MainForegroundColor}"
+                                       Text="Frees physical memory held by working sets and the system caches, using the memory functions built into Windows."/>
+
+                            <Border Style="{StaticResource BorderStyle}">
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,8">
+                                        <TextBlock Text="In use" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryUsed" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+                                        <TextBlock Text="Available" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryAvailable" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,8">
+                                        <TextBlock Text="Total" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryTotal" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="0">
+                                        <TextBlock Text="Free" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryFree" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1">
+                                        <TextBlock Text="Standby list" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryStandby" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="2">
+                                        <TextBlock Text="Modified list" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFMemoryModified" Text="-" FontSize="{DynamicResource HeaderFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Style="{StaticResource BorderStyle}">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="Areas to clean" FontWeight="SemiBold" Margin="0,0,0,6" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    <CheckBox Name="WPFMemoryAreaProcessWorkingSets" Content="Process working sets" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaSystemFileCache" Content="System file cache" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaModifiedPageList" Content="Modified page list" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaStandbyListLowPriority" Content="Standby list (low priority)" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaStandbyList" Content="Standby list" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaCombinedPageList" Content="Combined page list" Margin="0,2,0,2"/>
+                                    <CheckBox Name="WPFMemoryAreaRegistryCache" Content="Registry cache" Margin="0,2,0,2"/>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" FontStyle="Italic" Foreground="{DynamicResource MainForegroundColor}"
+                                               Text="Emptying the standby list throws away cached files. Programs may load more slowly for a while until Windows rebuilds the cache."/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource BorderStyle}">
+                                <StackPanel Margin="10">
+                                    <TextBlock Name="WPFMemoryReportTitle" Text="Last clean" FontWeight="SemiBold" Margin="0,0,0,6" Foreground="{DynamicResource MainForegroundColor}"/>
+                                    <TextBlock Name="WPFMemoryReport" Text="Nothing cleaned yet." TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="WPFMemoryClean" Content="Clean Now" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
+                            <Button Name="WPFMemoryRefresh" Content="Refresh" Margin="5" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                         </WrapPanel>
                     </Border>
                 </Grid>

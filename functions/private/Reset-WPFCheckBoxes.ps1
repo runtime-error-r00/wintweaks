@@ -30,8 +30,9 @@ function Reset-WPFCheckBoxes {
     } finally {
         [System.Threading.Monitor]::Exit($sync.SyncRoot)
     }
+    # Memory Cleaner checkboxes hold saved settings, not selections, and must not be cleared
     foreach ($syncEntry in $syncEntries) {
-        if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -like $checkboxfilterpattern) {
+        if ($syncEntry.Value -is [System.Windows.Controls.CheckBox] -and $syncEntry.Name -notlike "WPFToggle*" -and $syncEntry.Name -notlike "WPFMemory*" -and $syncEntry.Name -like $checkboxfilterpattern) {
             $checkboxName = $syncEntry.Key
             $sync.$checkboxName.IsChecked = $selectedSet.Contains($checkboxName)
         }

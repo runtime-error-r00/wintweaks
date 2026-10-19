@@ -1,0 +1,26 @@
+---
+title: Memory Cleaner
+description: Free up RAM held by working sets and the system caches from the Memory Cleaner page.
+sidebar:
+  order: 5
+---
+
+The **Memory Cleaner** page (Alt+M) frees physical memory with the memory functions built into Windows. The figures at the top show memory in use, available, total, free, and the size of the standby and modified page lists. Click **Refresh** to read them again.
+
+### Areas
+
+Tick the areas to clean, then click **Clean Now**. They are cleaned in this order, and each one runs on its own: if Windows refuses one, the report says why and the others still run.
+
+- **Process working sets**: moves pages that running programs are not using out of their memory.
+- **System file cache**: empties the working set of the system file cache.
+- **Modified page list**: writes changed pages to disk so they can be reused.
+- **Standby list (low priority)**: frees the cached pages Windows considers least likely to be used again.
+- **Standby list**: frees all cached pages.
+- **Combined page list**: merges identical pages of memory into one shared copy.
+- **Registry cache**: writes pending registry changes to disk. Off by default; it frees no memory itself.
+
+Emptying the standby list throws away cached files, so programs may load more slowly for a while until Windows rebuilds the cache. Areas the running Windows version does not support are greyed out.
+
+When the clean finishes, **Last clean** lists what each area released and the figures before and after. The total is how much the free list grew. It is less than the areas added up, because pages pass from one area to the next: a trimmed working set lands on the standby list, which a later area purges.
+
+The ticked areas are remembered for the next run, in `%LocalAppData%\winutil\memorycleaner.json`.
