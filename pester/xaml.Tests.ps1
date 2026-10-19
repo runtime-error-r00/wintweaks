@@ -160,11 +160,13 @@ Describe "XAML document" {
             "WPFTab2",
             "WPFTab3",
             "WPFTab4",
+            "WPFTab5",
             "WPFTab6",
             "WPFTab1BT",
             "WPFTab2BT",
             "WPFTab3BT",
             "WPFTab4BT",
+            "WPFTab5BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
@@ -196,6 +198,7 @@ Describe "XAML document" {
             "WPFAdvancedBack",
             "WPFAdvancedCoreIsolationOff",
             "WPFAdvancedCoreIsolationOn",
+            "WPFIsoDownload",
             "WPFUpdatesdefault",
             "WPFUpdatessecurity",
             "WPFDefaultAppxSelection",
@@ -240,6 +243,7 @@ Describe "XAML document" {
             "WPFTab2:Tweaks",
             "WPFTab3:Advanced",
             "WPFTab4:Updates",
+            "WPFTab5:Windows 11 ISO",
             "WPFTab6:AppX"
         )
 
@@ -300,8 +304,8 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 4
-        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab3BT", "WPFTab1BT", "WPFTab4BT")
+        $navButtons.Count | Should -Be 5
+        @($navButtons | ForEach-Object { $_.GetAttribute("Name") }) | Should -Be @("WPFTab2BT", "WPFTab3BT", "WPFTab1BT", "WPFTab4BT", "WPFTab5BT")
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }

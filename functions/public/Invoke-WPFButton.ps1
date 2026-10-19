@@ -144,6 +144,8 @@ function Invoke-WPFButtonAction {
         "WPFAdvancedRevert" {Invoke-WPFundoall -Tweak (Get-WinUtilAdvancedGroup -Group $sync.AdvancedGroup).Tweaks}
         "WPFAdvancedCoreIsolationOff" {Invoke-WPFtweaksbutton -Tweak "WPFTweaksAdvCoreIsolation"}
         "WPFAdvancedCoreIsolationOn" {Invoke-WPFundoall -Tweak "WPFTweaksAdvCoreIsolation"}
+        # The ISO is end-to-end encrypted on MEGA, so the browser does the download and decryption
+        "WPFIsoDownload" {Start-Process "https://mega.nz/file/YMdlAYjD#7z9M3VR5xPkZd9uphq6XbGcgMZywlezUT0PsU6QHL18"}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
