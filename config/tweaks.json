@@ -1000,7 +1000,7 @@
     "panel": "1",
     "tab": "Advanced",
     "Type": "Combobox",
-    "ComboItems": "Windows default (100)|High-end CPU (19)|Mid-range CPU (24)|Low-end CPU (34)",
+    "ComboItems": "Windows default (100)|High-end CPU (13)|Mid-range CPU (18)|Low-end CPU (22)",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\mouclass\\Parameters",
@@ -1009,9 +1009,9 @@
         "DefaultValue": "100",
         "Values": {
           "Windows default (100)": "100",
-          "High-end CPU (19)": "19",
-          "Mid-range CPU (24)": "24",
-          "Low-end CPU (34)": "34"
+          "High-end CPU (13)": "19",
+          "Mid-range CPU (18)": "24",
+          "Low-end CPU (22)": "34"
         }
       },
       {
@@ -1021,9 +1021,9 @@
         "DefaultValue": "100",
         "Values": {
           "Windows default (100)": "100",
-          "High-end CPU (19)": "19",
-          "Mid-range CPU (24)": "24",
-          "Low-end CPU (34)": "34"
+          "High-end CPU (13)": "19",
+          "Mid-range CPU (18)": "24",
+          "Low-end CPU (22)": "34"
         }
       }
     ],
