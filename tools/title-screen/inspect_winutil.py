@@ -1,16 +1,13 @@
 """Write WinUtil window and UI Automation diagnostics to an explicit path.
 
-The regular tree does not contain WPF popup-menu entries until the popup is
-open. This inspector therefore records the desktop and main window first, then
-clicks ``ThemeButton`` and records both the refreshed window tree and any
-same-process popup windows. It must run at the same integrity level as WinUtil.
+The inspector records the visible desktop windows and the WinUtil window's UI
+Automation tree. It must run at the same integrity level as WinUtil.
 """
 
 from __future__ import annotations
 
 import argparse
 import contextlib
-import time
 from pathlib import Path
 
 from pywinauto import Desktop
@@ -48,7 +45,7 @@ def dump_tree(element, depth: int = 0, max_depth: int = 6) -> None:
 
 
 def inspect_winutil() -> None:
-    """Print desktop, WinUtil, and transient theme-menu diagnostics."""
+    """Print desktop and WinUtil diagnostics."""
     print("=== All visible top-level windows (win32 backend) ===")
     for window in Desktop(backend="win32").windows():
         try:
@@ -68,34 +65,6 @@ def inspect_winutil() -> None:
         app = Application(backend="uia").connect(handle=winutil_hwnd)
         window = app.window(handle=winutil_hwnd)
         dump_tree(window)
-
-        print("\n=== Opening theme popup and dumping its UIA tree ===")
-        theme_button = window.child_window(
-            auto_id="ThemeButton",
-            control_type="Button",
-        ).wrapper_object()
-        window.set_focus()
-        theme_button.click_input()
-        time.sleep(0.5)
-
-        print("\n=== Main WinUtil UIA tree with theme popup open ===")
-        dump_tree(window)
-
-        # WPF may expose the menu as a separate top-level popup or attach it to
-        # the main tree depending on framework and rendering state. Record both.
-        popup_windows = [
-            candidate
-            for candidate in app.windows(visible_only=True)
-            if candidate.handle != winutil_hwnd
-        ]
-        if not popup_windows:
-            print("No separate same-process popup window was found.")
-        for popup in popup_windows:
-            print(
-                f"Popup HWND={hex(popup.handle)} "
-                f"title={popup.window_text()!r} class={popup.class_name()!r}"
-            )
-            dump_tree(popup)
     except Exception as exc:
         raise RuntimeError(
             "UI Automation inspection failed. Run at the same elevation level "

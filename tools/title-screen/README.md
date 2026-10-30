@@ -1,9 +1,9 @@
 # WinUtil title screen
 
-This tool generates the Light and Dark composite used as WinUtil's title screen
-in the repository README and documentation site. It opens the Tweaks tab,
-captures both themes, and combines them into one PNG. The two raw captures are
-temporary and are removed when the command finishes.
+This tool generates the image used as WinUtil's title screen in the repository
+README and documentation site. It opens the Tweaks tab, captures the Dark
+theme, crops the window shadow and frames it as one PNG. The raw capture is
+temporary and is removed when the command finishes.
 
 ## Requirements
 
@@ -31,13 +31,10 @@ uv run --locked python automate_title_screen.py --output "$env:TEMP\winutil-titl
 
 Open the resulting PNG and check that:
 
-- the Tweaks tab is shown,
-- the Light theme is on the upper-left side of the diagonal,
-- the Dark theme is on the lower-right side, and
+- the Tweaks tab is shown, and
 - no desktop background or other windows are visible.
 
-The automation works whether WinUtil starts in Light or Dark mode. It leaves the
-window on the Tweaks tab in Light mode.
+The automation leaves the window maximized on the Tweaks tab.
 
 ## Automation
 
@@ -50,7 +47,7 @@ as diagnostic artifacts for 14 days.
 
 ## Tests
 
-The tests cover theme detection and composite image generation without opening
+The tests cover theme detection and framed image generation without opening
 WinUtil:
 
 ```powershell
@@ -63,13 +60,12 @@ If WinUtil cannot be found, make sure the compiled WPF window is open and that
 the terminal is elevated. The script deliberately ignores editors, terminals,
 and browser windows that merely contain "WinUtil" in their title.
 
-If a tab or theme control cannot be found, capture the UI Automation tree while
-WinUtil is open:
+If the Tweaks tab cannot be found, capture the UI Automation tree while WinUtil
+is open:
 
 ```powershell
 uv run --locked python inspect_winutil.py "$env:TEMP\winutil-inspect.txt"
 ```
 
-The inspector opens the theme menu before recording its controls. Attach the
-text file when reporting a failure. It contains window and control metadata, not
+Attach the text file when reporting a failure. It contains window and control metadata, not
 the generated screenshots.

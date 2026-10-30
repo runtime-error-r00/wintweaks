@@ -160,7 +160,7 @@ jobs:
           commit-message: "docs: update WinUtil title screen"
           title: "docs: update WinUtil title screen"
           body: |
-            Regenerates the WinUtil Light and Dark title-screen composite from the current main branch.
+            Regenerates the WinUtil Dark title-screen image from the current main branch.
 
             Source workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           labels: |

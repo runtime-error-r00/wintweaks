@@ -1,7 +1,7 @@
 [project]
 name = "winutil-title-screen"
 version = "0.1.0"
-description = "Generate WinUtil's Light and Dark title-screen composite"
+description = "Generate WinUtil's Dark title-screen image"
 requires-python = ">=3.13"
 dependencies = [
     "pillow",
