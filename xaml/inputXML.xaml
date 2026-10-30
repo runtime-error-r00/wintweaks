@@ -987,10 +987,8 @@
                 Background="{DynamicResource SidebarBackgroundColor}"
                 BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,0,1,0">
             <StackPanel Name="NavDockPanel" Orientation="Vertical" VerticalAlignment="Top" Background="Transparent" Margin="10,16,10,10">
-                <!-- The logo is inserted in front of the name at startup -->
+                <!-- The full WinTweaks logo is inserted at startup -->
                 <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="8,0,0,24">
-                    <TextBlock Text="WinTweaks" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0" Background="Transparent"
-                               Foreground="{DynamicResource MainForegroundColor}"/>
                 </StackPanel>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Height="{DynamicResource TabButtonHeight}" Name="WPFTab2BT" ToolTip="Privacy and performance tweaks (Alt+T)">
                     <StackPanel Orientation="Horizontal">
