@@ -49,38 +49,8 @@ function Start-WinUtilUserInterface {
         throw [System.InvalidOperationException]::new("Failed to parse the XAML content. WinUtil cannot start.", $readerFailure.Exception)
     }
 
-    # Setup the Window to follow listen for windows Theme Change events and update the winutil theme
-    # throttle logic needed, because windows seems to send more than one theme change event per change
-    $themeState = @{ LastChange = [datetime]::MinValue }
-    $debounceInterval = [timespan]::FromSeconds(2)
-    $sync.Form.Add_Loaded({
-        $interopHelper = New-Object System.Windows.Interop.WindowInteropHelper $sync.Form
-        $hwndSource = [System.Windows.Interop.HwndSource]::FromHwnd($interopHelper.Handle)
-        $hwndSource.AddHook({
-            param (
-                [System.IntPtr]$hwnd,
-                [int]$msg,
-                [System.IntPtr]$wParam,
-                [System.IntPtr]$lParam,
-                [ref]$handled
-            )
-            $null = $hwnd, $wParam, $lParam
-            # Check for the Event WM_SETTINGCHANGE (0x1001A) and validate that Button shows the icon for "Auto" => [char]0xF08C
-            if (($msg -eq 0x001A) -and $sync.ThemeButton.Content -eq [char]0xF08C) {
-                $currentTime = [datetime]::Now
-                if ($currentTime - $themeState.LastChange -gt $debounceInterval) {
-                    Invoke-WinutilThemeChange -theme "Auto"
-                    $themeState.LastChange = $currentTime
-                    # [ref] out-parameter: assigning to $handled would only replace the local
-                    $handled.Value = $true
-                }
-            }
-            return 0
-        })
-    })
-
     Measure-WinUtilStep -Scope "UI" -Name "apply theme" -ScriptBlock {
-        Invoke-WinutilThemeChange -theme $sync.preferences.theme
+        Invoke-WinutilThemeChange
     }
 
     # No tab content is built before first paint. Invoke-WPFTab builds whichever tab it
@@ -238,7 +208,7 @@ function Start-WinUtilUserInterface {
     })
 
     $sync["Form"].Add_MouseLeftButtonDown({
-        Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+        Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "FontScaling")
         $sync["Form"].DragMove()
     })
 
@@ -255,7 +225,7 @@ function Start-WinUtilUserInterface {
     })
 
     $sync["Form"].Add_Deactivated({
-        Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "Theme", "FontScaling")
+        Invoke-WPFPopup -Action "Hide" -Popups @("Settings", "FontScaling")
     })
 
     $sync["Form"].Add_ContentRendered({
@@ -363,24 +333,8 @@ function Start-WinUtilUserInterface {
         Set-WinUtilTaskbaritem -overlay "logo"
     })
 
-    $sync["ThemeButton"].Add_Click({
-        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Toggle"; "FontScaling" = "Hide" }
-    })
-    $sync["AutoThemeMenuItem"].Add_Click({
-        Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
-        Invoke-WinutilThemeChange -theme "Auto"
-    })
-    $sync["DarkThemeMenuItem"].Add_Click({
-        Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
-        Invoke-WinutilThemeChange -theme "Dark"
-    })
-    $sync["LightThemeMenuItem"].Add_Click({
-        Invoke-WPFPopup -Action "Hide" -Popups @("Theme")
-        Invoke-WinutilThemeChange -theme "Light"
-    })
-
     $sync["SettingsButton"].Add_Click({
-        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "Theme" = "Hide"; "FontScaling" = "Hide" }
+        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Toggle"; "FontScaling" = "Hide" }
     })
     $sync["ImportMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
@@ -413,7 +367,7 @@ Runspace  : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a hr
 
     # Font Scaling Event Handlers
     $sync["FontScalingButton"].Add_Click({
-        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "Theme" = "Hide"; "FontScaling" = "Toggle" }
+        Invoke-WPFPopup -PopupActionTable @{ "Settings" = "Hide"; "FontScaling" = "Toggle" }
     })
 
     $sync["FontScalingSlider"].Add_ValueChanged({

@@ -153,25 +153,9 @@ namespace System.Windows
     }
 
     function script:New-WinUtilFakeThemeForm {
-        $themeButton = [pscustomobject]@{
-            Content = $null
-        }
-
-        $form = [pscustomobject]@{
+        [pscustomobject]@{
             Resources = @{}
-            ThemeButton = $themeButton
         }
-        $form | Add-Member -MemberType ScriptMethod -Name FindName -Value {
-            param($name)
-
-            if ($name -eq "ThemeButton") {
-                return $this.ThemeButton
-            }
-
-            return $null
-        }
-
-        $form
     }
 
     function script:New-WinUtilPreferenceSync {
@@ -204,39 +188,19 @@ Describe "Invoke-WinutilThemeChange" {
         Remove-WinUtilPreferenceGlobals
     }
 
-    It "applies shared and selected theme resources, keeps the preference in memory, and updates the theme button" {
+    It "applies shared and dark theme resources without writing preferences" {
         $script:testRoot = New-WinUtilPreferencesTestRoot
         $global:winutildir = $script:testRoot
         New-WinUtilPreferenceSync
 
-        Invoke-WinutilThemeChange -theme "Dark"
+        Invoke-WinutilThemeChange
 
-        $script:sync.preferences.theme | Should -Be "Dark"
         $script:sync.Form.Resources.ContainsKey("FontFamily") | Should -BeTrue
         $script:sync.Form.Resources.ContainsKey("ButtonCornerRadius") | Should -BeTrue
-        $script:sync.Form.Resources.ContainsKey("MainBackgroundColor") | Should -BeTrue
         $script:sync.Form.Resources.ContainsKey("CBorderColor") | Should -BeTrue
-        $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xE708)
+        $script:sync.Form.Resources["MainBackgroundColor"].ToString() | Should -Be ([Windows.Media.SolidColorBrush]::new($script:sync.configs.themes.Dark.MainBackgroundColor)).ToString()
 
         Test-Path -Path (Join-Path $script:testRoot "preferences.ini") | Should -BeFalse
-    }
-
-    It "uses the Windows dark-mode setting when Auto theme is selected" {
-        $script:testRoot = New-WinUtilPreferencesTestRoot
-        $global:winutildir = $script:testRoot
-        New-WinUtilPreferenceSync
-        Mock Get-ItemProperty {
-            [pscustomobject]@{ AppsUseLightTheme = 0; SystemUsesLightTheme = 0 }
-        } -ParameterFilter { $Path -like "*Themes\Personalize" }
-
-        Invoke-WinutilThemeChange -theme "Auto"
-
-        Should -Invoke -CommandName Get-ItemProperty -Times 1 -Exactly -ParameterFilter {
-            $Path -like "*Themes\Personalize"
-        }
-        $script:sync.preferences.theme | Should -Be "Auto"
-        $script:sync.Form.Resources.ContainsKey("MainBackgroundColor") | Should -BeTrue
-        $script:sync.Form.ThemeButton.Content | Should -Be ([string][char]0xF08C)
     }
 }
 
@@ -245,7 +209,7 @@ Describe "Theme configuration" {
         $themes = Get-Content -Path (Join-Path $script:repoRoot "config\themes.json") -Raw | ConvertFrom-Json
         $invalidEntries = [System.Collections.Generic.List[string]]::new()
 
-        foreach ($themeName in @("shared", "Light", "Dark")) {
+        foreach ($themeName in @("shared", "Dark")) {
             foreach ($property in $themes.$themeName.PSObject.Properties) {
                 if ($property.Name -like "*Color" -and [string]$property.Value -notmatch '^(#[0-9A-Fa-f]{6}|Transparent)$') {
                     $invalidEntries.Add("$themeName.$($property.Name) should be a hex color or Transparent")

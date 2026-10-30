@@ -1,22 +1,18 @@
 function Invoke-WinutilThemeChange {
     <#
     .SYNOPSIS
-        Toggles between light and dark themes for a Windows utility application.
+        Applies the dark theme to the user interface.
 
     .DESCRIPTION
-        This function toggles the theme of the user interface between 'Light' and 'Dark' modes,
+        This function applies the 'shared' and 'Dark' resources from themes.json,
         modifying various UI elements such as colors, margins, corner radii, font families, etc.
-        If the '-init' switch is used, it initializes the theme based on the system's current dark mode setting.
 
     .EXAMPLE
         Invoke-WinutilThemeChange
-        # Toggles the theme between 'Light' and 'Dark'.
+        # Applies the dark theme.
 
 
     #>
-    param (
-        [string]$theme = "Auto"
-    )
 
     function Set-WinutilTheme {
         <#
@@ -29,7 +25,7 @@ function Invoke-WinutilThemeChange {
             'Set-ThemeResourceProperty' helper function to modify the application's resources.
 
         .PARAMETER currentTheme
-            The name of the theme to be applied. Common values are "Light", "Dark", or "shared".
+            The name of the theme to be applied. Either "Dark" or "shared".
         #>
         param (
             [string]$currentTheme
@@ -123,39 +119,11 @@ function Invoke-WinutilThemeChange {
         }
     }
 
-    $sync.preferences.theme = $theme
     Set-WinutilTheme -currentTheme "shared"
-
-    switch ($sync.preferences.theme) {
-        "Auto" {
-            $personalize = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -ErrorAction SilentlyContinue
-            $systemUsesDarkMode = $personalize.AppsUseLightTheme -eq 0 -and $personalize.SystemUsesLightTheme -eq 0
-            if ($systemUsesDarkMode) {
-                $theme = "Dark"
-            }
-            else{
-                $theme = "Light"
-            }
-
-            Set-WinutilTheme -currentTheme $theme
-            $themeButtonIcon = [char]0xF08C
-        }
-        "Dark" {
-            Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [char]0xE708
-           }
-        "Light" {
-            Set-WinutilTheme -currentTheme $sync.preferences.theme
-            $themeButtonIcon = [char]0xE706
-        }
-    }
+    Set-WinutilTheme -currentTheme "Dark"
 
     # Reapply font scaling if it was previously set (theme change resets shared resources)
     if ($sync.ContainsKey("FontScaleFactor") -and $sync.FontScaleFactor -ne 1.0) {
         Invoke-WinUtilFontScaling -ScaleFactor $sync.FontScaleFactor
     }
-
-    # Update the theme selector button with the appropriate icon
-    $ThemeButton = $sync.Form.FindName("ThemeButton")
-    $ThemeButton.Content = [string]$themeButtonIcon
 }

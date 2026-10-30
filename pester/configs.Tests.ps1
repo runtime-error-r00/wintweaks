@@ -484,7 +484,7 @@ Describe "UI-rendered config entries" {
         $themes = Get-WinUtilConfigObject -Name "themes"
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
-        foreach ($themeName in @("shared", "Light", "Dark")) {
+        foreach ($themeName in @("shared", "Dark")) {
             if (-not (Test-WinUtilHasProperty -Object $themes -Name $themeName)) {
                 $invalidEntries.Add("themes.json missing $themeName")
                 continue
@@ -494,19 +494,6 @@ Describe "UI-rendered config entries" {
                 if ([string]::IsNullOrWhiteSpace([string]$property.Value)) {
                     $invalidEntries.Add("$themeName.$($property.Name) is blank")
                 }
-            }
-        }
-
-        $lightKeys = @($themes.Light.PSObject.Properties.Name)
-        $darkKeys = @($themes.Dark.PSObject.Properties.Name)
-        foreach ($key in $lightKeys) {
-            if ($darkKeys -notcontains $key) {
-                $invalidEntries.Add("Dark theme missing $key")
-            }
-        }
-        foreach ($key in $darkKeys) {
-            if ($lightKeys -notcontains $key) {
-                $invalidEntries.Add("Light theme missing $key")
             }
         }
 
@@ -521,7 +508,6 @@ Describe "UI-rendered config entries" {
         ) | Sort-Object -Unique
         $themeResourceNames = @(
             $themes.shared.PSObject.Properties.Name
-            $themes.Light.PSObject.Properties.Name
             $themes.Dark.PSObject.Properties.Name
             "CBorderColor"
             "CButtonBackgroundMouseoverColor"

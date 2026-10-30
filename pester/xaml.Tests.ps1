@@ -120,7 +120,6 @@ Describe "Interface startup failures" {
         . $script:uiScriptPath
         $script:sync = [Hashtable]::Synchronized(@{
             StepTimings = [System.Collections.ArrayList]::Synchronized([System.Collections.ArrayList]::new())
-            preferences = @{ theme = "Auto" }
         })
         $script:inputXML = '<NotAWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />'
 
@@ -272,7 +271,6 @@ Describe "XAML document" {
         $minimizeButton = $script:xaml.SelectSingleNode('//*[local-name()="Button"][@Name="WPFMinimizeButton"]')
         $actionPanel = $minimizeButton.ParentNode
         $topBarButtonNames = @(
-            "ThemeButton",
             "FontScalingButton",
             "SettingsButton",
             "WPFMinimizeButton",

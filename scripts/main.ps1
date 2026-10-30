@@ -19,7 +19,6 @@ $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
     $sync.configs.appxHashtable[$_.Name] = $_.Value
 }
-$sync.preferences.theme = "Auto"
 $sync.preferences.packagemanager = "Winget"
 
 function Remove-WinUtilTempScript {
